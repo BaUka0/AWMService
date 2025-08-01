@@ -1,6 +1,4 @@
-﻿
-
-using AWMService.Infrastructure.Data;
+﻿using AWMService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
