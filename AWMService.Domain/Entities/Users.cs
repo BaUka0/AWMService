@@ -9,7 +9,7 @@ namespace AWMService.Domain.Entities
         public int UserTypeId { get; set; } 
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string SurName { get; set; } = string.Empty;
+        public string? SurName { get; set; } 
 
         [Required]
         public string Email { get; set; }

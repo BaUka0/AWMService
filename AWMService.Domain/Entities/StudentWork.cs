@@ -8,7 +8,7 @@
         public int AcademicYearId { get; set; }
         public int WorkTypeId { get; set; }
         public int StatusId { get; set; }
-        public float FinalGrade { get; set; }
+        public string FinalGrade { get; set; }
         public DateTime CreatedOn { get; set; }
 
         public Users Student { get; set; }

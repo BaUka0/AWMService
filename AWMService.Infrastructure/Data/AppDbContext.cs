@@ -1,4 +1,5 @@
 ﻿using AWMService.Domain.Entities;
+using AWMService.Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -6,10 +7,10 @@ namespace AWMService.Infrastructure.Data
 {
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+         public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options)
         {
         }
-      
         public DbSet<AcademicYears> AcademicYears { get; set; }
         public DbSet<Applications> Applications { get; set; }
         public DbSet<Attachments> Attachments { get; set; }
@@ -36,10 +37,49 @@ namespace AWMService.Infrastructure.Data
         public DbSet<Topics> Topics { get; set; }
         public DbSet<UserRoles> UserRoles { get; set; }
         public DbSet<Users> Users { get; set; }
-        public DbSet<UserType> userTypes { get; set; }
+        public DbSet<UserType> UserTypes { get; set; }
         public DbSet<WorkChecks> WorkChecks { get; set; }
-        public DbSet<WorkTypes> WorkTypes { get; set; } 
-        
+        public DbSet<WorkTypes> WorkTypes { get; set; }
 
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+
+            modelBuilder.ApplyConfiguration(new AcademicYearsConfiguration());
+            modelBuilder.ApplyConfiguration(new ApplicationsConfiguration());
+            modelBuilder.ApplyConfiguration(new AttachmentsConfiguration());
+            modelBuilder.ApplyConfiguration(new CheckTypesConfiguration());
+            modelBuilder.ApplyConfiguration(new CommissionMembersConfiguration());
+            modelBuilder.ApplyConfiguration(new CommissionsConfiguration());
+            modelBuilder.ApplyConfiguration(new CommissionTypesConfiguration());
+            modelBuilder.ApplyConfiguration(new DefenseGradesConfiguration());
+            modelBuilder.ApplyConfiguration(new DefenseSchedulesConfiguration());
+            modelBuilder.ApplyConfiguration(new DepartmentExpertsConfiguration());
+            modelBuilder.ApplyConfiguration(new DepartmentsConfiguration());
+            modelBuilder.ApplyConfiguration(new DirectionConfiguration());
+            modelBuilder.ApplyConfiguration(new EvaluationCriteriaConfiguration());
+            modelBuilder.ApplyConfiguration(new EvaluationScoresConfiguration());
+            modelBuilder.ApplyConfiguration(new InstitutesConfiguration());
+            modelBuilder.ApplyConfiguration(new PeriodConfiguration());
+            modelBuilder.ApplyConfiguration(new PeriodTypesConfiguration());
+            modelBuilder.ApplyConfiguration(new PermissionsConfiguration());
+            modelBuilder.ApplyConfiguration(new RolePermissionsConfiguration());
+            modelBuilder.ApplyConfiguration(new RolesConfiguration());
+            modelBuilder.ApplyConfiguration(new StatusesConfiguration());
+            modelBuilder.ApplyConfiguration(new StudentWorkConfiguration());
+            modelBuilder.ApplyConfiguration(new SupervisorApprovalsConfiguration());
+            modelBuilder.ApplyConfiguration(new TopicsConfiguration());
+            modelBuilder.ApplyConfiguration(new UserRolesConfiguration());
+            modelBuilder.ApplyConfiguration(new UsersConfiguration());
+            modelBuilder.ApplyConfiguration(new UserTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new WorkChecksConfiguration());
+            modelBuilder.ApplyConfiguration(new WorkTypesConfiguration());
+
+
+            base.OnModelCreating(modelBuilder);
+
+        }
     }
+ 
 }

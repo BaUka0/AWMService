@@ -10,7 +10,7 @@ namespace AWMService.Domain.Entities
         public string FileName { get; set; }
         public byte FileData { get; set; }
         public string FileType { get; set; }
-        public BigInteger FileSize { get; set; }
+        public long FileSize { get; set; }
         public int UploadedById { get; set; }
         public DateTime UploadedOn { get; set; }
 
