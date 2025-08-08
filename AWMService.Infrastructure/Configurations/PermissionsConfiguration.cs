@@ -7,22 +7,36 @@ namespace AWMService.Infrastructure.Configurations
 {
     public class PermissionsConfiguration : IEntityTypeConfiguration<Permissions>
     {
-        public void Configure(EntityTypeBuilder<Permissions> builder)
+        public void Configure(EntityTypeBuilder<Permissions> e)
         {
-            builder.HasKey(p => p.PermissionId);
-            builder.Property(p => p.Name)
+            e.ToTable("Permissions");
+            e.HasKey(x => x.Id);
+
+            e.Property(x => x.Name)
                 .IsRequired()
                 .HasMaxLength(100);
-            builder.Property(p => p.Description)
-                .HasMaxLength(500);
-            
-            builder.HasIndex(p => p.Name)
+            e.Property(x => x.Description)
+                .HasMaxLength(255);
+            e.Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
+            e.Property(x => x.CreatedOn)
+                .IsRequired();
+
+            e.HasIndex(x => x.Name)
                 .IsUnique();
 
-            //builder.HasMany(p => p.RolePermissions)
-            //    .WithOne(rp => rp.Permission);
-                
-                
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.CreatedBy).
+                OnDelete(DeleteBehavior.Restrict);
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.ModifiedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.DeletedBy)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

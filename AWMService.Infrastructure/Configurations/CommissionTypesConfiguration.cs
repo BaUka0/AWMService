@@ -6,12 +6,22 @@ namespace AWMService.Infrastructure.Configurations
 {
     public class CommissionTypesConfiguration : IEntityTypeConfiguration<CommissionTypes>
     {
-        public void Configure(EntityTypeBuilder<CommissionTypes> builder)
+        public void Configure(EntityTypeBuilder<CommissionTypes> e)
         {
-            builder.HasKey(builder => builder.CommissionTypesId);
-            builder.Property(builder => builder.Name)
-                .IsRequired()
+            e.ToTable("CommissionTypes");
+            e.HasKey(x => x.Id);
+
+            e.Property(x => x.Name)
                 .HasMaxLength(100);
+            e.Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
+
+            e.HasIndex(x => x.Name);
+
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.DeletedBy)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

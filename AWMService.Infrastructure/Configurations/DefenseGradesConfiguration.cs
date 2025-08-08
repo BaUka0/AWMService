@@ -6,24 +6,34 @@ namespace AWMService.Infrastructure.Configurations
 {
     public class DefenseGradesConfiguration : IEntityTypeConfiguration<DefenseGrades>
     {
-        public void Configure(EntityTypeBuilder<DefenseGrades> builder)
+        public void Configure(EntityTypeBuilder<DefenseGrades> e)
         {
-            builder.HasKey(b=> b.DefenseGradeId);
-            
-            builder.Property(b => b.FinalGrade)
-                .IsRequired()
+            e.ToTable("DefenseGrades");
+            e.HasKey(x => x.Id);
+
+            e.Property(x => x.FinalGrade)
                 .HasMaxLength(50);
 
-            builder.HasOne(c=>c.DefenseScheduled)
-                .WithMany(c => c.DefenseGrades)
-                .HasForeignKey(c => c.DefenseScheduledId)
-                .OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(x => x.DefenseScheduleId);
+            e.HasIndex(x => x.StatusId);
 
-            builder.HasOne(c => c.Status)
-                .WithMany(c => c.DefenseGrades)
-                .HasForeignKey(c => c.StatusId)
+            e.HasOne(x => x.DefenseSchedule)
+                .WithMany(s => s.DefenseGrades)
+                .HasForeignKey(x => x.DefenseScheduleId)
+                .OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Status)
+                .WithMany()
+                .HasForeignKey(x => x.StatusId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.ModifiedBy)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

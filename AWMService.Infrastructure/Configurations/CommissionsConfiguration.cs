@@ -6,33 +6,51 @@ namespace AWMService.Infrastructure.Configurations
 {
     public class CommissionsConfiguration : IEntityTypeConfiguration<Commissions>
     {
-        public void Configure(EntityTypeBuilder<Commissions> builder)
+        public void Configure(EntityTypeBuilder<Commissions> e)
         {
-          builder.HasKey(c => c.CommissionId);
-            builder.Property(c => c.Name)
-                     .IsRequired()
-                     .HasMaxLength(255);
+            e.ToTable("Commissions");
+            e.HasKey(x => x.Id);
 
-            builder.HasOne(c => c.Periods)
-                   .WithMany(p => p.Commissions)
-                   .HasForeignKey(c => c.PeriodId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            e.Property(x => x.Name)
+                .HasMaxLength(255);
+            e.Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
 
-            builder.HasOne(c => c.CommissionTypes)
-                     .WithMany(ct => ct.Commissions)
-                     .HasForeignKey(c => c.CommissionTypeId)
-                     .OnDelete(DeleteBehavior.Restrict);
+            e.HasIndex(x => x.CommissionTypeId);
+            e.HasIndex(x => x.SecretaryId);
+            e.HasIndex(x => x.PeriodId);
+            e.HasIndex(x => new { x.DepartmentId, x.PeriodId, x.CommissionTypeId })
+                .IsUnique(false);
 
-            builder.HasOne(c => c.Secretary)
-                        .WithMany(u => u.Commissions)
-                        .HasForeignKey(c => c.SecretaryId)
-                        .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.CommissionType)
+                .WithMany()
+                .HasForeignKey(x => x.CommissionTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.Secretary)
+                .WithMany()
+                .HasForeignKey(x => x.SecretaryId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.Period)
+                .WithMany()
+                .HasForeignKey(x => x.PeriodId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.Department)
+                .WithMany()
+                .HasForeignKey(x => x.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(c => c.Department)
-                        .WithMany(d => d.Commissions)
-                        .HasForeignKey(c => c.DepartmentId)
-                        .OnDelete(DeleteBehavior.Restrict);
-
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.ModifiedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.DeletedBy)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

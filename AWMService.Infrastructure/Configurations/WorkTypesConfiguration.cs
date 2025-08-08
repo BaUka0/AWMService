@@ -7,12 +7,22 @@ namespace AWMService.Infrastructure.Configurations
 {
     public class WorkTypesConfiguration : IEntityTypeConfiguration<WorkTypes>
     {
-        public void Configure(EntityTypeBuilder<WorkTypes> builder)
+        public void Configure(EntityTypeBuilder<WorkTypes> e)
         {
-            builder.HasKey(wt => wt.WorkTypeId);
-            builder.Property(wt => wt.Name)
+            e.ToTable("WorkTypes");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Name)
                 .IsRequired()
                 .HasMaxLength(100);
+            e.Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
+
+            e.HasIndex(x => x.Name);
+
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.DeletedBy)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

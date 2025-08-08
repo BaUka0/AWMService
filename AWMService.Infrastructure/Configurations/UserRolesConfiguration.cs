@@ -7,22 +7,34 @@ namespace AWMService.Infrastructure.Configurations
 {
     public class UserRolesConfiguration : IEntityTypeConfiguration<UserRoles>
     {
-
-        public void Configure(EntityTypeBuilder<UserRoles> builder)
+        public void Configure(EntityTypeBuilder<UserRoles> e)
         {
+            e.ToTable("UserRoles");
+            e.HasKey(x => new { x.UserId, x.RoleId });
 
-            builder.HasKey(cm => new { cm.UserId, cm.RoleId });
+            e.Property(x => x.AssignedOn)
+                .IsRequired();
 
-            builder.HasOne(u => u.Users)
-                .WithMany(ur => ur.UserRoles)
-                .HasForeignKey(ur => ur.UserId)
+            e.HasIndex(x => x.UserId);
+            e.HasIndex(x => x.RoleId);
+
+            e.HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Role)
+                .WithMany()
+                .HasForeignKey(x => x.RoleId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(ur => ur.Roles)
-                .WithMany(r => r.UserRoles)
-                .HasForeignKey(ur => ur.RoleId)
-                .OnDelete(DeleteBehavior.Cascade);
-
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.AssignedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.RevokedBy)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

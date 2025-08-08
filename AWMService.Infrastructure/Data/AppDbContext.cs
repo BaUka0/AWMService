@@ -40,6 +40,9 @@ namespace AWMService.Infrastructure.Data
         public DbSet<UserTypes> UserTypes { get; set; }
         public DbSet<WorkChecks> WorkChecks { get; set; }
         public DbSet<WorkTypes> WorkTypes { get; set; }
+        public DbSet<ExternalContacts> ExternalContacts { get; set; }
+        public DbSet<Notifications> Notifications { get; set; }
+        public DbSet<Settings> Settings { get; set; }
 
 
 
@@ -57,11 +60,11 @@ namespace AWMService.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new DefenseSchedulesConfiguration());
             modelBuilder.ApplyConfiguration(new DepartmentExpertsConfiguration());
             modelBuilder.ApplyConfiguration(new DepartmentsConfiguration());
-            modelBuilder.ApplyConfiguration(new DirectionConfiguration());
+            modelBuilder.ApplyConfiguration(new DirectionsConfiguration());
             modelBuilder.ApplyConfiguration(new EvaluationCriteriaConfiguration());
             modelBuilder.ApplyConfiguration(new EvaluationScoresConfiguration());
             modelBuilder.ApplyConfiguration(new InstitutesConfiguration());
-            modelBuilder.ApplyConfiguration(new PeriodConfiguration());
+            modelBuilder.ApplyConfiguration(new PeriodsConfiguration());
             modelBuilder.ApplyConfiguration(new PeriodTypesConfiguration());
             modelBuilder.ApplyConfiguration(new PermissionsConfiguration());
             modelBuilder.ApplyConfiguration(new RolePermissionsConfiguration());
@@ -75,6 +78,9 @@ namespace AWMService.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new UserTypeConfiguration());
             modelBuilder.ApplyConfiguration(new WorkChecksConfiguration());
             modelBuilder.ApplyConfiguration(new WorkTypesConfiguration());
+            modelBuilder.ApplyConfiguration(new ExternalContactsConfiguration());
+            modelBuilder.ApplyConfiguration(new NotificationsConfiguration());
+            modelBuilder.ApplyConfiguration(new SettingsConfiguration());
 
 
             base.OnModelCreating(modelBuilder);

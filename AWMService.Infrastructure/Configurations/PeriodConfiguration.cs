@@ -5,34 +5,53 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AWMService.Infrastructure.Configurations
 {
-    public class PeriodConfiguration : IEntityTypeConfiguration<Periods>
+    public class PeriodsConfiguration : IEntityTypeConfiguration<Periods>
     {
-        public void Configure(EntityTypeBuilder<Periods> builder)
+        public void Configure(EntityTypeBuilder<Periods> e)
         {
-            builder.HasKey(a => a.PeriodId);
+            e.ToTable("Periods");
+            e.HasKey(x => x.Id);
 
-            builder.Property(a => a.StartDate).IsRequired();
-            builder.Property(a => a.EndDate).IsRequired();
+            e.Property(x => x.StartDate)
+                .IsRequired();
+            e.Property(x => x.EndDate)
+                .IsRequired();
+            e.Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
 
-            builder.HasOne(a=>a.PeriodType)
-                .WithMany(a=>a.Periods)
-                .HasForeignKey(a => a.PeriodTypeId)
+            e.HasIndex(x => new { x.AcademicYearId, x.PeriodTypeId })
+                .IsUnique(false);
+            e.HasIndex(x => x.StatusId);
+            e.HasIndex(x => x.StartDate);
+            e.HasIndex(x => x.EndDate);
+
+            e.HasOne(x => x.PeriodType)
+                .WithMany()
+                .HasForeignKey(x => x.PeriodTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.AcademicYear)
+                .WithMany()
+                .HasForeignKey(x => x.AcademicYearId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.Status)
+                .WithMany()
+                .HasForeignKey(x => x.StatusId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(a => a.AcademicYear)
-                .WithMany(a => a.Periods)
-                .HasForeignKey(a => a.AcademicYearId)
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.ModifiedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.DeletedBy)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(a => a.Status)
-                .WithMany(a => a.Periods)
-                .HasForeignKey(a => a.StatusId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasOne(a => a.CreatedByUser)
-                .WithMany(a => a.Periods)
-                .HasForeignKey(a => a.CreatedBy)
-                .OnDelete(DeleteBehavior.Restrict);
+            e.ToTable(tb => tb.HasCheckConstraint("CK_Periods_Dates", "[StartDate] <= [EndDate]"));
         }
     }
 }

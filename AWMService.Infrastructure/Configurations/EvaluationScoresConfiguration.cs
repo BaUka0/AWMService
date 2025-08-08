@@ -7,24 +7,39 @@ namespace AWMService.Infrastructure.Configurations
 {
     public class EvaluationScoresConfiguration : IEntityTypeConfiguration<EvaluationScores>
     {
-        public void Configure(EntityTypeBuilder<EvaluationScores> builder)
+        public void Configure(EntityTypeBuilder<EvaluationScores> e)
         {
-            builder.HasKey(es => es.EvaluationScoresId);
+            e.ToTable("EvaluationScores");
+            e.HasKey(x => x.Id);
 
-            builder.HasOne(es => es.DefenseGrade)
-                .WithMany(dg => dg.EvaluationScores)
-                .HasForeignKey(es => es.DefenseGradeId)
+            e.HasIndex(x => x.DefenseGradeId);
+            e.HasIndex(x => x.CriteriaId);
+            e.HasIndex(x => x.CommissionMemberId);
+
+            e.HasOne(x => x.DefenseGrade)
+                .WithMany(g => g.EvaluationScores)
+                .HasForeignKey(x => x.DefenseGradeId)
+                .OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Criteria)
+                .WithMany(c => c.EvaluationScores)
+                .HasForeignKey(x => x.CriteriaId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.CommissionMember)
+                .WithMany()
+                .HasForeignKey(x => x.CommissionMemberId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(es => es.Criteria)
-                .WithMany(ec => ec.EvaluationScores)
-                .HasForeignKey(es => es.CriteriaId)
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.ModifiedBy)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(es => es.CommissionMember)
-                .WithMany(u => u.EvaluationScores)
-                .HasForeignKey(es => es.CommissionMemberId)
-                .OnDelete(DeleteBehavior.Restrict);
+            
+            e.ToTable(tb => tb.HasCheckConstraint("CK_EvaluationScores_ScoreValue_NonNegative", "[ScoreValue] >= 0"));
         }
     }
 }

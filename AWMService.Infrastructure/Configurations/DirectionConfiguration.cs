@@ -4,30 +4,46 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AWMService.Infrastructure.Configurations
 {
-    public class DirectionConfiguration : IEntityTypeConfiguration<Directions>
+    public class DirectionsConfiguration : IEntityTypeConfiguration<Directions>
     {
-        public void Configure(EntityTypeBuilder<Directions> builder)
+        public void Configure(EntityTypeBuilder<Directions> e)
         {
-            builder.HasKey(d => d.DirectionId);
-            builder.Property(d => d.NameKz)
-                .HasMaxLength(255);
-            builder.Property(d => d.NameRu)
-                .HasMaxLength(255);
-            builder.Property(d => d.NameEn)
-                .HasMaxLength(255);
+            e.ToTable("Directions");
+            e.HasKey(x => x.Id);
 
-            builder.HasOne(d => d.Supervisor)
-                .WithMany(u => u.Directions)
-                .HasForeignKey(d => d.SupervisorId)
+            e.Property(x => x.NameKz)
+                .HasMaxLength(255);
+            e.Property(x => x.NameRu)
+                .HasMaxLength(255);
+            e.Property(x => x.NameEn)
+                .HasMaxLength(255);
+            e.Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
+
+            e.HasIndex(x => x.StatusId);
+            e.HasIndex(x => x.SupervisorId);
+
+            e.HasOne(x => x.Supervisor)
+                .WithMany()
+                .HasForeignKey(x => x.SupervisorId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.Status)
+                .WithMany()
+                .HasForeignKey(x => x.StatusId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-
-            builder.HasOne(d => d.Status)
-                .WithMany(s => s.Directions)
-                .HasForeignKey(d => d.StatusId)
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.ModifiedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.DeletedBy)
                 .OnDelete(DeleteBehavior.Restrict);
         }
-
-
     }
 }

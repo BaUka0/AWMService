@@ -6,12 +6,14 @@ namespace AWMService.Infrastructure.Configurations
 {
     public class InstitutesConfiguration : IEntityTypeConfiguration<Institutes>
     {
-        public void Configure(EntityTypeBuilder<Institutes> builder)
+        public void Configure(EntityTypeBuilder<Institutes> e)
         {
-            builder.HasKey(i => i.InstituteId);
-            builder.Property(i => i.Name)
-                .HasMaxLength(255)
-                .IsRequired();
+            e.ToTable("Institutes");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Name)
+             .IsRequired()
+             .HasMaxLength(255);
+            e.HasIndex(x => x.Name);
 
         }
     }

@@ -7,18 +7,18 @@ namespace AWMService.Infrastructure.Configurations
 {
     public class DepartmentsConfiguration : IEntityTypeConfiguration<Departments>
     {
-        public void Configure(EntityTypeBuilder<Departments> builder)
+        public void Configure(EntityTypeBuilder<Departments> e)
         {
-            builder.HasKey(d => d.DepartmentId);
-            builder.Property(d => d.Name)
-                .IsRequired()
-                .HasMaxLength(500);
+            e.ToTable("Departments");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Name).IsRequired().HasMaxLength(255);
 
-            //public Institutes Institute { get; set; }
+            e.HasIndex(x => x.InstituteId);
+            e.HasIndex(x => new { x.InstituteId, x.Name });
 
-            builder.HasOne(d => d.Institute)
-                .WithMany(i => i.Departments)
-                .HasForeignKey(d => d.InstituteId)
+            e.HasOne(x => x.Institute)
+                .WithMany()
+                .HasForeignKey(x => x.InstituteId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

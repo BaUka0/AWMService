@@ -7,17 +7,27 @@ namespace AWMService.Infrastructure.Configurations
 {
     public class EvaluationCriteriaConfiguration : IEntityTypeConfiguration<EvaluationCriteria>
     {
-        public void Configure(EntityTypeBuilder<EvaluationCriteria> builder)
+        public void Configure(EntityTypeBuilder<EvaluationCriteria> e)
         {
-            builder.HasKey(ec => ec.EvaluationCriteriaId);
-            builder.Property(ec => ec.Name)
-                .IsRequired()
-                .HasMaxLength(255);
+            e.ToTable("EvaluationCriteria");
+            e.HasKey(x => x.Id);
 
-            builder.HasOne(ec => ec.CommissionType)
-                .WithMany(ct => ct.EvaluationCriteria)
-                .HasForeignKey(ec => ec.CommissionTypeId)
-                .OnDelete(DeleteBehavior.Cascade);
+            e.Property(x => x.Name)
+                .HasMaxLength(255);
+            e.Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
+
+            e.HasIndex(x => new { x.CommissionTypeId, x.Name });
+
+            e.HasOne(x => x.CommissionType)
+                .WithMany()
+                .HasForeignKey(x => x.CommissionTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.DeletedBy)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

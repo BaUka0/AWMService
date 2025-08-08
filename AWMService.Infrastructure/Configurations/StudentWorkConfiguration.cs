@@ -4,40 +4,59 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AWMService.Infrastructure.Configurations
 {
-    class StudentWorkConfiguration : IEntityTypeConfiguration<StudentWork>
+    public class StudentWorkConfiguration : IEntityTypeConfiguration<StudentWork>
     {
-        public void Configure(EntityTypeBuilder<StudentWork> builder)
+        public void Configure(EntityTypeBuilder<StudentWork> e)
         {
-            builder.HasKey(c => c.StudentWorkId);
-            builder.Property(c=>c.FinalGrade)
-                .HasMaxLength(50)
-                .IsRequired();
+            e.ToTable("StudentWork");
+            e.HasKey(x => x.Id);
 
-            builder.HasOne(c=> c.Student)
-                .WithMany(c => c.StudentWorks)
-                .HasForeignKey(c => c.StudentId)
+            e.Property(x => x.FinalGrade)
+                .HasMaxLength(50);
+            e.Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
+
+            e.HasIndex(x => x.StudentId);
+            e.HasIndex(x => x.TopicId)
+                .IsUnique(false);
+            e.HasIndex(x => x.AcademicYearId);
+            e.HasIndex(x => new { x.StudentId, x.AcademicYearId, x.WorkTypeId })
+                .IsUnique(false);
+            e.HasIndex(x => x.StatusId);
+
+            e.HasOne(x => x.Student)
+                .WithMany()
+                .HasForeignKey(x => x.StudentId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.Topic)
+                .WithMany()
+                .HasForeignKey(x => x.TopicId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.AcademicYear)
+                .WithMany()
+                .HasForeignKey(x => x.AcademicYearId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.WorkType)
+                .WithMany()
+                .HasForeignKey(x => x.WorkTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.Status)
+                .WithMany()
+                .HasForeignKey(x => x.StatusId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(c => c.Topic)
-                .WithMany(c => c.StudentWorks)
-                .HasForeignKey(c => c.TopicId)
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.CreatedBy)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasOne(c => c.AcademicYear)
-                .WithMany(c => c.StudentWorks)
-                .HasForeignKey(c => c.AcademicYearId)
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.ModifiedBy)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasOne(c => c.WorkType)
-                .WithMany(c => c.StudentWorks)
-                .HasForeignKey(c => c.WorkTypeId)
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.DeletedBy)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasOne(c => c.Status)
-                .WithMany(c => c.StudentWorks)
-                .HasForeignKey(c => c.StatusId)
-                .OnDelete(DeleteBehavior.Restrict);
-
         }
     }
 }

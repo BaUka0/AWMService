@@ -7,12 +7,23 @@ namespace AWMService.Infrastructure.Configurations
 {
     public class CheckTypesConfiguration : IEntityTypeConfiguration<CheckTypes>
     {
-        public void Configure(EntityTypeBuilder<CheckTypes> builder)
+        public void Configure(EntityTypeBuilder<CheckTypes> e)
         {
-            builder.HasKey(ct => ct.CheckTypeId);
-            builder.Property(ct => ct.Name)
+            e.ToTable("CheckTypes");
+            e.HasKey(x => x.Id);
+
+            e.Property(x => x.Name)
                 .IsRequired()
                 .HasMaxLength(100);
+            e.Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
+
+            e.HasIndex(x => x.Name);
+
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.DeletedBy)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

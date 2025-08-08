@@ -7,28 +7,43 @@ namespace AWMService.Infrastructure.Configurations
 {
     public class SupervisorApprovalsConfiguration : IEntityTypeConfiguration<SupervisorApprovals>
     {
-        public void Configure(EntityTypeBuilder<SupervisorApprovals> builder)
+        public void Configure(EntityTypeBuilder<SupervisorApprovals> e)
         {
-            builder.HasKey(sa => sa.Id);
-            builder.HasOne(sa => sa.User)
-                   .WithMany(sa=>sa.SupervisorApprovals)
-                   .HasForeignKey(sa => sa.UserId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            e.ToTable("SupervisorApprovals");
+            e.HasKey(x => x.Id);
 
-            builder.HasOne(sa => sa.Department)
-                     .WithMany(sa => sa.SupervisorApprovals)
-                     .HasForeignKey(sa => sa.DepartmentId)
-                     .OnDelete(DeleteBehavior.Restrict);
+            e.Property(x => x.ApprovedOn)
+                .IsRequired();
 
-            builder.HasOne(sa => sa.AcademicYear)
-                        .WithMany(sa => sa.SupervisorApprovals)
-                        .HasForeignKey(sa => sa.AcademicYearId)
-                        .OnDelete(DeleteBehavior.Restrict);
+            e.HasIndex(x => new { x.UserId, x.DepartmentId, x.AcademicYearId })
+                .IsUnique();
+            e.HasIndex(x => x.ApprovedBy);
 
-            builder.HasOne(sa => sa.ApprovedByUser)
-                        .WithMany(sa => sa.ApprovedByUsers)
-                        .HasForeignKey(sa => sa.ApprovedBy)
-                        .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.Department)
+                .WithMany()
+                .HasForeignKey(x => x.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.AcademicYear)
+                .WithMany()
+                .HasForeignKey(x => x.AcademicYearId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.ApprovedByUser)
+                .WithMany()
+                .HasForeignKey(x => x.ApprovedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.ModifiedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.RevokedBy)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

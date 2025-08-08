@@ -7,34 +7,51 @@ namespace AWMService.Infrastructure.Configurations
 {
     public class TopicsConfiguration : IEntityTypeConfiguration<Topics>
     {
-        public void Configure(EntityTypeBuilder<Topics> builder)
+        public void Configure(EntityTypeBuilder<Topics> e)
         {
-            builder.HasKey(t => t.TopicId);
-            builder.Property(t => t.TitleKz)
-                .IsRequired()
-                .HasMaxLength(500);
+            e.ToTable("Topics");
+            e.HasKey(x => x.Id);
 
-            builder.Property(t => t.TitleRu)
-                .IsRequired()
+            e.Property(x => x.TitleKz)
                 .HasMaxLength(500);
-
-            builder.Property(t => t.TitleEn)
-                .IsRequired()
+            e.Property(x => x.TitleRu)
                 .HasMaxLength(500);
+            e.Property(x => x.TitleEn)
+                .HasMaxLength(500);
+            e.Property(x => x.MaxParticipants)
+                .HasDefaultValue(1);
+            e.Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
 
-            builder.HasOne(t => t.Direction)
-                .WithMany(d => d.Topics)
-                .HasForeignKey(t => t.DirectionId)
+            e.HasIndex(x => x.DirectionId);
+            e.HasIndex(x => x.SupervisorId);
+            e.HasIndex(x => x.StatusId);
+            e.HasIndex(x => x.CreatedOn);
+
+            e.HasOne(x => x.Direction)
+                .WithMany()
+                .HasForeignKey(x => x.DirectionId)
+                .OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Supervisor)
+                .WithMany()
+                .HasForeignKey(x => x.SupervisorId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.Status)
+                .WithMany()
+                .HasForeignKey(x => x.StatusId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(t => t.SuperVisor)
-                .WithMany(u => u.Topics)
-                .HasForeignKey(t => t.SuperVisorId)
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.CreatedBy)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasOne(t => t.Status)
-                .WithMany(s => s.Topics)
-                .HasForeignKey(t => t.StatusId)
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.ModifiedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.DeletedBy)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

@@ -7,33 +7,46 @@ namespace AWMService.Infrastructure.Configurations
 {
     public class DepartmentExpertsConfiguration : IEntityTypeConfiguration<DepartmentExperts>
     {
-        public void Configure(EntityTypeBuilder<DepartmentExperts> builder)
+        public void Configure(EntityTypeBuilder<DepartmentExperts> e)
         {
-            builder.HasKey(de => de.DepartmentExpertId);
+            e.ToTable("DepartmentExperts");
+            e.HasKey(x => x.Id);
 
-            builder.HasOne(de => de.User)
-                .WithMany(u => u.DepartmentExperts)
-                .HasForeignKey(de => de.UserId)
+            e.Property(x => x.AssignedOn)
+                .IsRequired();
+
+            e.HasIndex(x => new { x.DepartmentId, x.CheckTypeId, x.AcademicYearId, x.UserId })
+                .IsUnique();
+            e.HasIndex(x => x.AssignedBy);
+
+            e.HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.Department)
+                .WithMany()
+                .HasForeignKey(x => x.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.CheckType)
+                .WithMany()
+                .HasForeignKey(x => x.CheckTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.AcademicYear)
+                .WithMany()
+                .HasForeignKey(x => x.AcademicYearId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(de => de.Department)
-                .WithMany(d => d.DepartmentExperts)
-                .HasForeignKey(de => de.DepartmentId)
+            e.HasOne(x => x.AssignedByUser)
+                .WithMany()
+                .HasForeignKey(x => x.AssignedBy)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasOne(de => de.CheckType)
-                .WithMany(ct => ct.DepartmentExperts)
-                .HasForeignKey(de => de.CheckTypeId)
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.ModifiedBy)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasOne(de => de.AcademicYear)
-                .WithMany(ay => ay.DepartmentExperts)
-                .HasForeignKey(de => de.AcademicYearId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasOne(c=>c.AssignedByUser)
-                .WithMany(ce=>ce.AssignedDepartmentExperts)
-                .HasForeignKey(de => de.AssignedBy)
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.RevokedBy)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

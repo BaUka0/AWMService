@@ -8,27 +8,17 @@ namespace AWMService.Infrastructure.Configurations
 {
     public class RolesConfiguration : IEntityTypeConfiguration<Roles>
     {
-        public void Configure(EntityTypeBuilder<Roles> builder)
+        public void Configure(EntityTypeBuilder<Roles> e)
         {
-            builder.HasKey(r => r.RoleId);
-            builder.Property(r => r.Name)
+            e.ToTable("Roles");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Name)
                 .IsRequired()
                 .HasMaxLength(100);
-
-            builder.Property(r => r.Description)
+            e.Property(x => x.Description)
                 .HasMaxLength(255);
-
-            builder.HasMany(r => r.UserRoles)
-                .WithOne(ur => ur.Roles)
-                .HasForeignKey(ur => ur.RoleId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasMany(r => r.RolePermissions)
-                .WithOne(rp => rp.Role)
-                .HasForeignKey(rp => rp.RoleId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-
+            e.HasIndex(x => x.Name)
+                .IsUnique();
         }
     }
 }

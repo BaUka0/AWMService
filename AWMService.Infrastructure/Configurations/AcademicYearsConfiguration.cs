@@ -7,12 +7,32 @@ namespace AWMService.Infrastructure.Configurations
 {
     public class AcademicYearsConfiguration : IEntityTypeConfiguration<AcademicYears>
     {
-        public void Configure(EntityTypeBuilder<AcademicYears> builder)
+        public void Configure(EntityTypeBuilder<AcademicYears> e)
         {
-            builder.HasKey(ay => ay.AcademicYearId);
-            builder.Property(ay => ay.YearName)
+            e.ToTable("AcademicYears");
+            e.HasKey(x => x.Id);
+
+            e.Property(x => x.YearName)
                 .HasMaxLength(50);
+            e.Property(x => x.IsDeleted)
+                .HasDefaultValue(false);
+
+            e.HasIndex(x => x.YearName)
+                .IsUnique(false);
+
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.ModifiedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne<Users>()
+                .WithMany()
+                .HasForeignKey(x => x.DeletedBy)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
- 
+
 }
