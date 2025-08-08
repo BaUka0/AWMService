@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AWMService.Infrastructure.Configurations
 {
-    public class DepartmentsConfiguration : IEntityTypeConfiguration<Department>
+    public class DepartmentsConfiguration : IEntityTypeConfiguration<Departments>
     {
-        public void Configure(EntityTypeBuilder<Department> builder)
+        public void Configure(EntityTypeBuilder<Departments> builder)
         {
             builder.HasKey(d => d.DepartmentId);
             builder.Property(d => d.Name)

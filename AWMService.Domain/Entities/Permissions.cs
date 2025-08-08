@@ -1,17 +1,12 @@
 ﻿
-using System.ComponentModel.DataAnnotations;
+using AWMService.Domain.Commons;
 
 
 namespace AWMService.Domain.Entities
 {
-    public class Permissions
+    public class Permissions : AuditableSoftDeletableEntity
     {
-        public int PermissionId { get; set; }
-        [Required]
-        public string Name { get; set; }
-        public string Description { get; set; }
-
-        public List<RolePermissions> RolePermissions { get; set; }
-
+        public string Name { get; set; } = null!;
+        public string? Description { get; set; }
     }
 }

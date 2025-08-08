@@ -1,10 +1,10 @@
-﻿namespace AWMService.Domain.Entities
-{
-    public class PeriodTypes
-    {
-        public int PeriodTypeId { get; set; }
-        public string Name { get; set; }
+﻿using AWMService.Domain.Commons;
 
-        public List<Periods> Periods { get; set; } 
+namespace AWMService.Domain.Entities
+{
+    public class PeriodTypes : AuditableSoftDeletableEntity
+    {
+        public string Name { get; set; } = null!;
+        public ICollection<Periods> Periods { get; set; } = new List<Periods>();
     }
 }

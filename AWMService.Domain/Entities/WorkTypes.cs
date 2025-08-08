@@ -1,10 +1,10 @@
-﻿namespace AWMService.Domain.Entities
-{
-    public class WorkTypes
-    {
-        public int WorkTypeId { get; set; }
-        public string Name { get; set; }
+﻿using AWMService.Domain.Commons;
 
-        public List<StudentWork> StudentWorks { get; set; }
+namespace AWMService.Domain.Entities
+{
+    public class WorkTypes : AuditableSoftDeletableEntity
+    {
+        public string Name { get; set; } = null!;
+        public ICollection<StudentWork> StudentWorks { get; set; } = new List<StudentWork>();
     }
 }

@@ -1,11 +1,10 @@
-﻿namespace AWMService.Domain.Entities
+﻿using AWMService.Domain.Commons;
+
+namespace AWMService.Domain.Entities
 {
-    public class Institutes
+    public class Institutes : EntityBase
     {
-        public int InstituteId { get; set; }
-        public string Name { get; set; }
-
-        public List<Department> Departments { get; set; } 
-
+        public string Name { get; set; } = null!;
+        public ICollection<Departments> Departments { get; set; } = new List<Departments>();
     }
 }

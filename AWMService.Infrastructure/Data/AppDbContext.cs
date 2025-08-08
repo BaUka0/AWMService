@@ -20,7 +20,7 @@ namespace AWMService.Infrastructure.Data
         public DbSet<CommissionTypes> CommissionTypes { get; set; }
         public DbSet<DefenseGrades> DefenseGrades { get; set; }
         public DbSet<DefenseSchedules> DefenseSchedules { get; set; }
-        public DbSet<Department> Departments { get; set; }
+        public DbSet<Departments> Departments { get; set; }
         public DbSet<DepartmentExperts> DepartmentExperts { get; set; }
         public DbSet<Directions> Directions { get; set; }
         public DbSet<EvaluationCriteria> EvaluationCriteria { get; set; }
@@ -37,7 +37,7 @@ namespace AWMService.Infrastructure.Data
         public DbSet<Topics> Topics { get; set; }
         public DbSet<UserRoles> UserRoles { get; set; }
         public DbSet<Users> Users { get; set; }
-        public DbSet<UserType> UserTypes { get; set; }
+        public DbSet<UserTypes> UserTypes { get; set; }
         public DbSet<WorkChecks> WorkChecks { get; set; }
         public DbSet<WorkTypes> WorkTypes { get; set; }
 

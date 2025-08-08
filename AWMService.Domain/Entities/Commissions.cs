@@ -1,22 +1,23 @@
 ﻿
+using AWMService.Domain.Commons;
+
 namespace AWMService.Domain.Entities
 {
-    public class Commissions
+    public class Commissions : AuditableSoftDeletableEntity
     {
-        public int CommissionId { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public int CommissionTypeId { get; set; }
+        public CommissionTypes CommissionType { get; set; } = null!;
+
         public int SecretaryId { get; set; }
+        public Users Secretary { get; set; } = null!;
+
         public int PeriodId { get; set; }
+        public Periods Period { get; set; } = null!;
+
         public int DepartmentId { get; set; }
-        public DateTime CreatedOn { get; set; }
+        public Departments Department { get; set; } = null!;
 
-        public Periods Periods { get; set; }
-        public CommissionTypes CommissionTypes { get; set; }
-        public Users Secretary { get; set; }
-        public Department Department { get; set; }
-
-        public List<CommissionMembers> CommissionMembers { get; set; } 
-        public List<DefenseSchedules> DefenseSchedules { get; set; }
+        public ICollection<CommissionMembers> Members { get; set; } = new List<CommissionMembers>();
     }
 }

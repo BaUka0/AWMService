@@ -1,17 +1,18 @@
-﻿namespace AWMService.Domain.Entities
+﻿using AWMService.Domain.Commons;
+
+namespace AWMService.Domain.Entities
 {
-    public class DefenseSchedules
+    public class DefenseSchedules : AuditableSoftDeletableEntity
     {
-        public int DefenseSchedulesId { get; set; }
         public int CommissionId { get; set; }
+        public Commissions Commission { get; set; } = null!;
+
         public int StudentWorkId { get; set; }
+        public StudentWork StudentWork { get; set; } = null!;
+
         public DateTime DefenseDate { get; set; }
-        public string Location { get; set; }
+        public string? Location { get; set; }
 
-        public Commissions Commissions { get; set; }
-        public StudentWork StudentWorks { get; set; }
-
-        public List<DefenseGrades> DefenseGrades { get; set; }
-
+        public ICollection<DefenseGrades> DefenseGrades { get; set; } = new List<DefenseGrades>();
     }
 }

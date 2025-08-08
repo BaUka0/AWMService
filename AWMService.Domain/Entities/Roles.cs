@@ -1,17 +1,14 @@
 ﻿
-using System.ComponentModel.DataAnnotations;
+using AWMService.Domain.Commons;
 
 namespace AWMService.Domain.Entities
 {
-    public class Roles
+    public class Roles : EntityBase
     {
-        public int RoleId { get; set; }
-        [Required]
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public string Name { get; set; } = null!;
+        public string? Description { get; set; }
 
-
-        public List<UserRoles> UserRoles { get; set; }
-        public List<RolePermissions> RolePermissions { get; set; }
+        public ICollection<UserRoles> UserRoles { get; set; } = new List<UserRoles>();
+        public ICollection<RolePermissions> RolePermissions { get; set; } = new List<RolePermissions>();
     }
 }

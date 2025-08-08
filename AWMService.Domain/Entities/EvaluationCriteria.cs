@@ -1,13 +1,13 @@
-﻿namespace AWMService.Domain.Entities
+﻿using AWMService.Domain.Commons;
+
+namespace AWMService.Domain.Entities
 {
-    public class EvaluationCriteria
+    public class EvaluationCriteria : AuditableSoftDeletableEntity
     {
-        public int EvaluationCriteriaId { get; set; }
-        public string Name { get; set; }
-
+        public string Name { get; set; } = null!;
         public int CommissionTypeId { get; set; }
+        public CommissionTypes CommissionType { get; set; } = null!;
 
-        public CommissionTypes CommissionType { get; set; }
-        public List<EvaluationScores> EvaluationScores { get; set; }
+        public ICollection<EvaluationScores> EvaluationScores { get; set; } = new List<EvaluationScores>();
     }
 }

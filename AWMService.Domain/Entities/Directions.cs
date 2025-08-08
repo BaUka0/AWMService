@@ -1,20 +1,20 @@
-﻿namespace AWMService.Domain.Entities
+﻿using AWMService.Domain.Commons;
+
+namespace AWMService.Domain.Entities
 {
-    public class Directions
+    public class Directions : AuditableSoftDeletableEntity
     {
-        public int DirectionId { get; set; }
         public string NameKz { get; set; }
         public string NameRu { get; set; }
         public string NameEn { get; set; }
         public string Description { get; set; }
+
         public int SupervisorId { get; set; }
+        public Users Supervisor { get; set; } = null!;
+
         public int StatusId { get; set; }
-        public DateTime CreatedOn { get; set; }
+        public Statuses Status { get; set; } = null!;
 
-        public Users Supervisor { get; set; }
-        public Statuses Status { get; set; }
-
-        public List<Topics> Topics { get; set; }
-
+        public ICollection<Topics> Topics { get; set; } = new List<Topics>();
     }
 }

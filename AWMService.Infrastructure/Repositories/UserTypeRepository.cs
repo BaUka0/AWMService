@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AWMService.Infrastructure.Repositories;
 
-public class UserTypeRepository : GenericRepository<UserType>, IUserTypeRepository
+public class UserTypeRepository : GenericRepository<UserTypes>, IUserTypeRepository
 {
     private readonly AppDbContext _context;
 
@@ -14,13 +14,13 @@ public class UserTypeRepository : GenericRepository<UserType>, IUserTypeReposito
         _context = context;
     }
 
-    public async Task<UserType?> GetByNameAsync(string name)
+    public async Task<UserTypes?> GetByNameAsync(string name)
     {
         return await _context.UserTypes
             .FirstOrDefaultAsync(ut => ut.Name == name);
     }
 
-    public async Task<UserType?> GetWithUsersAsync(int userTypeId)
+    public async Task<UserTypes?> GetWithUsersAsync(int userTypeId)
     {
         return await _context.UserTypes
             .Include(ut => ut.Users)

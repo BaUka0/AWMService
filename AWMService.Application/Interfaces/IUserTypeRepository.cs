@@ -2,8 +2,8 @@ using AWMService.Domain.Entities;
 
 namespace AWMService.Application.Interfaces;
 
-public interface IUserTypeRepository : IGenericRepository<UserType>
+public interface IUserTypeRepository : IGenericRepository<UserTypes>
 {
-    Task<UserType?> GetByNameAsync(string name);
-    Task<UserType?> GetWithUsersAsync(int userTypeId);
+    Task<UserTypes?> GetByNameAsync(string name);
+    Task<UserTypes?> GetWithUsersAsync(int userTypeId);
 }

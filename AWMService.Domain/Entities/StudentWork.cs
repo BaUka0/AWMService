@@ -1,23 +1,28 @@
-﻿namespace AWMService.Domain.Entities
+﻿using AWMService.Domain.Commons;
+
+namespace AWMService.Domain.Entities
 {
-    public class StudentWork
+    public class StudentWork : AuditableSoftDeletableEntity
     {
-        public int StudentWorkId { get; set; }
         public int StudentId { get; set; }
+        public Users Student { get; set; } = null!;
+
         public int TopicId { get; set; }
+        public Topics Topic { get; set; } = null!;
+
         public int AcademicYearId { get; set; }
+        public AcademicYears AcademicYear { get; set; } = null!;
+
         public int WorkTypeId { get; set; }
+        public WorkTypes WorkType { get; set; } = null!;
+
         public int StatusId { get; set; }
-        public string FinalGrade { get; set; }
-        public DateTime CreatedOn { get; set; }
+        public Statuses Status { get; set; } = null!;
 
-        public Users Student { get; set; }
-        public Topics Topic { get; set; }
-        public AcademicYears AcademicYear { get; set; }
-        public WorkTypes WorkType { get; set; }
-        public Statuses Status { get; set; }
-        public List<DefenseSchedules> DefenseSchedules { get; set; }
-        public List<WorkChecks> WorkChecks { get; set; }
+        public string? FinalGrade { get; set; }
 
+        public ICollection<Attachments> Attachments { get; set; } = new List<Attachments>();
+        public ICollection<WorkChecks> WorkChecks { get; set; } = new List<WorkChecks>();
+        public ICollection<DefenseSchedules> DefenseSchedules { get; set; } = new List<DefenseSchedules>();
     }
 }

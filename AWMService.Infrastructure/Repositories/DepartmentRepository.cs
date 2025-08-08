@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AWMService.Infrastructure.Repositories;
 
-public class DepartmentRepository : GenericRepository<Department>, IDepartmentRepository
+public class DepartmentRepository : GenericRepository<Departments>, IDepartmentRepository
 {
     private readonly AppDbContext _context;
 
@@ -14,14 +14,14 @@ public class DepartmentRepository : GenericRepository<Department>, IDepartmentRe
         _context = context;
     }
 
-    public async Task<IEnumerable<Department>> GetByInstituteIdAsync(int instituteId)
+    public async Task<IEnumerable<Departments>> GetByInstituteIdAsync(int instituteId)
     {
         return await _context.Departments
             .Where(d => d.InstituteId == instituteId)
             .ToListAsync();
     }
 
-    public async Task<Department?> GetWithUsersAsync(int departmentId)
+    public async Task<Departments?> GetWithUsersAsync(int departmentId)
     {
         return await _context.Departments
             .Include(d => d.Users)

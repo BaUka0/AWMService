@@ -1,10 +1,10 @@
-﻿namespace AWMService.Domain.Entities
+﻿using AWMService.Domain.Commons;
+
+namespace AWMService.Domain.Entities
 {
-    public class CheckTypes
+    public class CheckTypes : AuditableSoftDeletableEntity
     {
-        public int CheckTypeId { get; set; }
-        public string Name { get; set; }
-        public List<DepartmentExperts> DepartmentExperts { get; set; } 
-        public List<WorkChecks> WorkChecks { get; set; }
+        public string Name { get; set; } = null!;
+        public ICollection<WorkChecks> WorkChecks { get; set; } = new List<WorkChecks>();
     }
 }

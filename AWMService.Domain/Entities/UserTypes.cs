@@ -1,9 +1,10 @@
 ﻿using AWMService.Domain.Commons;
+
 namespace AWMService.Domain.Entities
 {
-    public class Statuses : AuditableSoftDeletableEntity
+    public class UserTypes : EntityBase
     {
         public string Name { get; set; } = null!;
-        public string? EntityType { get; set; }
+        public ICollection<Users> Users { get; set; } = new List<Users>();
     }
 }

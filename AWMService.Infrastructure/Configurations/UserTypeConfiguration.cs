@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AWMService.Infrastructure.Configurations
 {
-    public class UserTypeConfiguration : IEntityTypeConfiguration<UserType>
+    public class UserTypeConfiguration : IEntityTypeConfiguration<UserTypes>
     {
-        public void Configure(EntityTypeBuilder<UserType> builder)
+        public void Configure(EntityTypeBuilder<UserTypes> builder)
         {
             builder.HasKey(builder => builder.UserTypeId);
 

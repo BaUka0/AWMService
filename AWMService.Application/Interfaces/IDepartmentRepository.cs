@@ -2,8 +2,8 @@ using AWMService.Domain.Entities;
 
 namespace AWMService.Application.Interfaces;
 
-public interface IDepartmentRepository : IGenericRepository<Department>
+public interface IDepartmentRepository : IGenericRepository<Departments>
 {
-    Task<IEnumerable<Department>> GetByInstituteIdAsync(int instituteId);
-    Task<Department?> GetWithUsersAsync(int departmentId);
+    Task<IEnumerable<Departments>> GetByInstituteIdAsync(int instituteId);
+    Task<Departments?> GetWithUsersAsync(int departmentId);
 }

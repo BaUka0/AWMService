@@ -1,28 +1,23 @@
-﻿namespace AWMService.Domain.Entities
+﻿using AWMService.Domain.Commons;
+
+namespace AWMService.Domain.Entities
 {
-    public class Topics
+    public class Topics : AuditableSoftDeletableEntity
     {
-        public int TopicId { get; set; }
         public int DirectionId { get; set; }
+        public Directions Direction { get; set; } = null!;
+
         public string TitleKz { get; set; }
         public string TitleRu { get; set; }
         public string TitleEn { get; set; }
         public string Description { get; set; }
-        public int MaxParticipants { get; set; }
-        public int SuperVisorId { get; set; }
+
+        public int MaxParticipants { get; set; } = 1;
+
+        public int SupervisorId { get; set; }
+        public Users Supervisor { get; set; } = null!;
+
         public int StatusId { get; set; }
-        public DateTime CreatedOn { get; set; }
-
-
-        public Directions Direction { get; set; }
-        public Users SuperVisor { get; set; }
-        public Statuses Status { get; set; }
-
-        public List<StudentWork> StudentWorks { get; set; }
-        public List<Applications> Applications { get; set; }
-
-
-
-
+        public Statuses Status { get; set; } = null!;
     }
 }
