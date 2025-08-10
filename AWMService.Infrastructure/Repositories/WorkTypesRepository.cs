@@ -1,29 +1,39 @@
-using AWMService.Application.Interfaces;
+﻿using AWMService.Application.Abstractions;
 using AWMService.Domain.Entities;
 using AWMService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace AWMService.Infrastructure.Repositories;
-
-public class WorkTypesRepository : GenericRepository<WorkTypes>, IWorkTypesRepository
+namespace AWMService.Infrastructure.Repositories
 {
-    private readonly AppDbContext _context;
-
-    public WorkTypesRepository(AppDbContext context) : base(context)
+    public class WorkTypesRepository : IWorkTypesRepository
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
+        public WorkTypesRepository(AppDbContext context) => _context = context;
 
-    public async Task<WorkTypes?> GetByNameAsync(string name)
-    {
-        return await _context.WorkTypes
-            .FirstOrDefaultAsync(wt => wt.Name == name);
-    }
+        public Task<WorkTypes?> GetWorkTypeByIdAsync(int id, CancellationToken ct) =>
+            _context.Set<WorkTypes>()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(wt => wt.Id == id && !wt.IsDeleted, ct);
 
-    public async Task<WorkTypes?> GetWithStudentWorksAsync(int workTypeId)
-    {
-        return await _context.WorkTypes
-            .Include(wt => wt.StudentWorks)
-            .FirstOrDefaultAsync(wt => wt.WorkTypeId == workTypeId);
+        public async Task<IReadOnlyList<WorkTypes>> GetAllWorkTypesAsync(CancellationToken ct) =>
+            await _context.Set<WorkTypes>()
+                .AsNoTracking()
+                .Where(wt => !wt.IsDeleted)
+                .OrderBy(wt => wt.Name) 
+                .ToListAsync(ct);
+
+        public async Task DeleteWorkTypeAsync(int id, int actorUserId, CancellationToken ct)
+        {
+            var workType = await _context.Set<WorkTypes>()
+                .FirstOrDefaultAsync(wt => wt.Id == id, ct);
+
+            if (workType is null || workType.IsDeleted) return;
+
+            workType.IsDeleted = true;
+            workType.DeletedOn = DateTime.UtcNow;
+            workType.DeletedBy = actorUserId;
+
+          
+        }
     }
 }

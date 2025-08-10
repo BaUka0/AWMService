@@ -1,51 +1,46 @@
-using AWMService.Application.Interfaces;
+﻿using AWMService.Application.Abstractions;
 using AWMService.Domain.Entities;
 using AWMService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace AWMService.Infrastructure.Repositories;
-
-public class UsersRepository : GenericRepository<Users>, IUsersRepository
+namespace AWMService.Infrastructure.Repositories
 {
-    private readonly AppDbContext _context;
-
-    public UsersRepository(AppDbContext context) : base(context)
+    public class UsersRepository : IUsersRepository
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
+        public UsersRepository(AppDbContext context) => _context = context;
 
-    public async Task<Users?> GetByEmailAsync(string email)
-    {
-        return await _context.Users
-            .FirstOrDefaultAsync(u => u.Email == email);
-    }
 
-    public async Task<Users?> GetByLoginAsync(string login)
-    {
-        return await _context.Users
-            .FirstOrDefaultAsync(u => u.Login == login);
-    }
+        public async Task<Users?> GetByIdAsync(int id, CancellationToken ct)
+        {
+            return await _context.Set<Users>()
+                .FirstOrDefaultAsync(u => u.Id == id, ct);
+        }
 
-    public async Task<Users?> GetByIINAsync(string iin)
-    {
-        return await _context.Users
-            .FirstOrDefaultAsync(u => u.IIN == iin);
-    }
+        public async Task<Users?> GetByLoginAsync(string login, CancellationToken ct)
+        {
+            return await _context.Set<Users>()
+                .FirstOrDefaultAsync(u => u.Login == login, ct);
+        }
 
-    public async Task<Users?> GetWithRolesAsync(int userId)
-    {
-        return await _context.Users
-            .Include(u => u.UserRoles)
-            .ThenInclude(ur => ur.Roles)
-            .Include(u => u.UserType)
-            .Include(u => u.Department)
-            .FirstOrDefaultAsync(u => u.UserId == userId);
-    }
+        public async Task<Users?> GetByEmailAsync(string email, CancellationToken ct)
+        {
+            return await _context.Set<Users>()
+                .FirstOrDefaultAsync(u => u.Email == email, ct);
+        }
 
-    public async Task<IEnumerable<Users>> GetByDepartmentIdAsync(int departmentId)
-    {
-        return await _context.Users
-            .Where(u => u.DepartmentId == departmentId)
-            .ToListAsync();
+        public async Task<IReadOnlyList<Users>> GetByIdsAsync (IEnumerable<int> ids, CancellationToken ct)
+        {
+            var list = await _context.Set<Users>()
+                .Where(u => ids.Contains(u.Id))
+                .ToListAsync(ct);
+
+            return list;
+        }
+        
+        public async Task AddUserAsync(Users user, CancellationToken ct)
+        {
+            await _context.Set<Users>().AddAsync(user, ct);
+        }
     }
 }

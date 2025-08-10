@@ -1,31 +1,67 @@
-using AWMService.Application.Interfaces;
+﻿using AWMService.Application.Abstractions;
 using AWMService.Domain.Entities;
 using AWMService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace AWMService.Infrastructure.Repositories;
-
-public class EvaluationCriteriaRepository : GenericRepository<EvaluationCriteria>, IEvaluationCriteriaRepository
+namespace AWMService.Infrastructure.Repositories
 {
-    private readonly AppDbContext _context;
-
-    public EvaluationCriteriaRepository(AppDbContext context) : base(context)
+    public class EvaluationCriteriaRepository : IEvaluationCriteriaRepository
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
+        public EvaluationCriteriaRepository(AppDbContext context) => _context = context;
+        public async Task<EvaluationCriteria?> GetCriteriaByIdAsync(int id, CancellationToken ct) 
+        { 
+           return await _context.Set<EvaluationCriteria>()
+               .AsNoTracking()
+               .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct);
+        }
+        public async Task<IReadOnlyList<EvaluationCriteria>> ListActiveAsync(int? commissionTypeId, CancellationToken ct)
+        {
+            var q = _context.Set<EvaluationCriteria>()
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted);
 
-    public async Task<IEnumerable<EvaluationCriteria>> GetByCommissionTypeIdAsync(int commissionTypeId)
-    {
-        return await _context.EvaluationCriteria
-            .Where(ec => ec.CommissionTypeId == commissionTypeId)
-            .ToListAsync();
-    }
+            if (commissionTypeId is not null)
+                q = q.Where(x => x.CommissionTypeId == commissionTypeId);
 
-    public async Task<EvaluationCriteria?> GetByNameAndTypeAsync(string name, int commissionTypeId)
-    {
-        return await _context.EvaluationCriteria
-            .FirstOrDefaultAsync(ec =>
-                ec.Name == name &&
-                ec.CommissionTypeId == commissionTypeId);
+            return await q
+                .OrderBy(x => x.Name)
+                .ThenBy(x => x.Id)
+                .ToListAsync(ct);
+        }
+
+        public async Task AddCriteriaAsync(string name, int commissionTypeId, CancellationToken ct)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Name is required.", nameof(name));
+
+            var entity = new EvaluationCriteria
+            {
+                Name = name.Trim(),
+                CommissionTypeId = commissionTypeId,
+                IsDeleted = false,
+                DeletedOn = null,
+                DeletedBy = null
+            };
+
+            await _context.Set<EvaluationCriteria>().AddAsync(entity, ct);
+        }
+
+        public async Task SoftDeleteAsync(int id, int actorUserId, CancellationToken ct)
+        {
+            var entity = await _context.Set<EvaluationCriteria>()
+                .FirstOrDefaultAsync(x => x.Id == id, ct);
+
+            if (entity is null || entity.IsDeleted) return;
+
+            entity.IsDeleted = true;
+            entity.DeletedOn = DateTime.UtcNow;
+            entity.DeletedBy = actorUserId;
+        }
     }
 }

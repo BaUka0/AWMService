@@ -24,7 +24,7 @@ namespace AWMService.Domain.Entities
         public string? Comment { get; set; }
         public string? ResultData { get; set; }
 
-        public DateTime SubmittedOn { get; set; }
+        public DateTime? SubmittedOn { get; set; }
         public DateTime? CheckedOn { get; set; }
 
         public ICollection<Attachments> Attachments { get; set; } = new List<Attachments>();

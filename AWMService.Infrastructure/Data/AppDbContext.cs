@@ -1,11 +1,13 @@
-﻿using AWMService.Domain.Entities;
+﻿using AWMService.Application.Abstractions;
+using AWMService.Domain.Entities;
 using AWMService.Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 
 namespace AWMService.Infrastructure.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : DbContext, IUnitOfWork
     {
          public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
@@ -45,6 +47,8 @@ namespace AWMService.Infrastructure.Data
         public DbSet<Settings> Settings { get; set; }
 
 
+        public override Task<int> SaveChangesAsync(CancellationToken ct = default) => base.SaveChangesAsync(ct);
+        public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken ct = default) => Database.BeginTransactionAsync(ct);
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
