@@ -14,7 +14,6 @@ public static class DependencyInjection
         
         services.AddDbContext<AppDbContext>(options =>
         options.UseSqlServer(connectionString));
-        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<AppDbContext>());
        
        
         services.AddScoped<IAcademicYearsRepository, AcademicYearsRepository>();
@@ -46,6 +45,8 @@ public static class DependencyInjection
         services.AddScoped<IWorkTypesRepository, WorkTypesRepository>();
         services.AddScoped<IEvaluationCriteriaRepository, EvaluationCriteriaRepository>();
         services.AddScoped<IEvaluationScoresRepository, EvaluationScoresRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 
         return services;
     }
