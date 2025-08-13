@@ -24,42 +24,77 @@ namespace AWMService.Infrastructure.Migrations
 
             modelBuilder.Entity("AWMService.Domain.Entities.AcademicYears", b =>
                 {
-                    b.Property<int>("AcademicYearId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AcademicYearId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("YearName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("AcademicYearId");
-
-                    b.ToTable("AcademicYears");
-                });
-
-            modelBuilder.Entity("AWMService.Domain.Entities.Applications", b =>
-                {
-                    b.Property<int>("ApplicationId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("CreatedBy")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ApplicationId"));
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("MotivationLetter")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("YearName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("DeletedBy");
+
+                    b.HasIndex("ModifiedBy");
+
+                    b.HasIndex("YearName");
+
+                    b.ToTable("AcademicYears", (string)null);
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.Applications", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
@@ -70,35 +105,47 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("TopicId")
                         .HasColumnType("int");
 
-                    b.HasKey("ApplicationId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("CreatedOn");
+
+                    b.HasIndex("ModifiedBy");
 
                     b.HasIndex("StatusId");
 
-                    b.HasIndex("StudentId");
-
                     b.HasIndex("TopicId");
 
-                    b.ToTable("Applications");
+                    b.HasIndex("StudentId", "TopicId")
+                        .IsUnique();
+
+                    b.ToTable("Applications", (string)null);
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.Attachments", b =>
                 {
-                    b.Property<int>("AttachmentsId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AttachmentsId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AssociatedEntityId")
+                    b.Property<int>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<string>("EntityType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
 
-                    b.Property<byte>("FileData")
-                        .HasColumnType("tinyint");
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("FileData")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("FileName")
                         .IsRequired()
@@ -109,95 +156,238 @@ namespace AWMService.Infrastructure.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("FileType")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("UploadedById")
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("StudentWorkId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UploadedBy")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("UploadedOn")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("AttachmentsId");
+                    b.Property<int?>("WorkCheckId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("UploadedById");
+                    b.HasKey("Id");
 
-                    b.ToTable("Attachments");
+                    b.HasIndex("DeletedBy");
+
+                    b.HasIndex("ModifiedBy");
+
+                    b.HasIndex("StudentWorkId");
+
+                    b.HasIndex("UploadedBy");
+
+                    b.HasIndex("UploadedOn");
+
+                    b.HasIndex("WorkCheckId");
+
+                    b.ToTable("Attachments", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Attachments_FileSize_NonNegative", "[FileSize] >= 0");
+                        });
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.CheckTypes", b =>
                 {
-                    b.Property<int>("CheckTypeId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CheckTypeId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("CheckTypeId");
-
-                    b.ToTable("CheckTypes");
-                });
-
-            modelBuilder.Entity("AWMService.Domain.Entities.CommissionMembers", b =>
-                {
-                    b.Property<int>("CommissionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MemberId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RoleInCommission")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("CommissionId", "MemberId");
-
-                    b.HasIndex("MemberId");
-
-                    b.ToTable("CommissionMembers");
-                });
-
-            modelBuilder.Entity("AWMService.Domain.Entities.CommissionTypes", b =>
-                {
-                    b.Property<int>("CommissionTypesId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CommissionTypesId"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("CommissionTypesId");
-
-                    b.ToTable("CommissionTypes");
-                });
-
-            modelBuilder.Entity("AWMService.Domain.Entities.Commissions", b =>
-                {
-                    b.Property<int>("CommissionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CommissionId"));
-
-                    b.Property<int>("CommissionTypeId")
+                    b.Property<int>("CreatedBy")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeletedBy");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("CheckTypes", (string)null);
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.CommissionMembers", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssignedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AssignedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CommissionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ExternalContactId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MemberId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RemovedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("RemovedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RoleInCommission")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignedBy");
+
+                    b.HasIndex("ExternalContactId");
+
+                    b.HasIndex("MemberId");
+
+                    b.HasIndex("RemovedBy");
+
+                    b.HasIndex("CommissionId", "ExternalContactId")
+                        .IsUnique()
+                        .HasFilter("[ExternalContactId] IS NOT NULL");
+
+                    b.HasIndex("CommissionId", "MemberId")
+                        .IsUnique()
+                        .HasFilter("[MemberId] IS NOT NULL");
+
+                    b.ToTable("CommissionMembers", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_CommissionMembers_EitherMemberOrExternal", "([MemberId] IS NOT NULL) OR ([ExternalContactId] IS NOT NULL)");
+                        });
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.CommissionTypes", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeletedBy");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("CommissionTypes", (string)null);
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.Commissions", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CommissionTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CommissionTypesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -210,111 +400,141 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("SecretaryId")
                         .HasColumnType("int");
 
-                    b.HasKey("CommissionId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CommissionTypeId");
 
-                    b.HasIndex("DepartmentId");
+                    b.HasIndex("CommissionTypesId");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("DeletedBy");
+
+                    b.HasIndex("ModifiedBy");
 
                     b.HasIndex("PeriodId");
 
                     b.HasIndex("SecretaryId");
 
-                    b.ToTable("Commissions");
+                    b.HasIndex("DepartmentId", "PeriodId", "CommissionTypeId");
+
+                    b.ToTable("Commissions", (string)null);
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.DefenseGrades", b =>
                 {
-                    b.Property<int>("DefenseGradeId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DefenseGradeId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("DefenseScheduledId")
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DefenseScheduleId")
                         .HasColumnType("int");
 
                     b.Property<string>("FinalGrade")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<float>("FinalScore")
-                        .HasColumnType("real");
+                    b.Property<double>("FinalScore")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
 
-                    b.HasKey("DefenseGradeId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("DefenseScheduledId");
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("DefenseScheduleId");
+
+                    b.HasIndex("ModifiedBy");
 
                     b.HasIndex("StatusId");
 
-                    b.ToTable("DefenseGrades");
+                    b.ToTable("DefenseGrades", (string)null);
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.DefenseSchedules", b =>
                 {
-                    b.Property<int>("DefenseSchedulesId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DefenseSchedulesId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CommissionId")
                         .HasColumnType("int");
 
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("DefenseDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<string>("Location")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("StudentWorkId")
                         .HasColumnType("int");
 
-                    b.HasKey("DefenseSchedulesId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CommissionId");
 
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("DefenseDate");
+
+                    b.HasIndex("DeletedBy");
+
+                    b.HasIndex("ModifiedBy");
+
                     b.HasIndex("StudentWorkId");
 
-                    b.ToTable("DefenseSchedules");
-                });
-
-            modelBuilder.Entity("AWMService.Domain.Entities.Department", b =>
-                {
-                    b.Property<int>("DepartmentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DepartmentId"));
-
-                    b.Property<int>("InstituteId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.HasKey("DepartmentId");
-
-                    b.HasIndex("InstituteId");
-
-                    b.ToTable("Departments");
+                    b.ToTable("DefenseSchedules", (string)null);
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.DepartmentExperts", b =>
                 {
-                    b.Property<int>("DepartmentExpertId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DepartmentExpertId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AcademicYearId")
                         .HasColumnType("int");
@@ -331,10 +551,28 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ModifiedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("RevokedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RevokedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("RevokedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("DepartmentExpertId");
+                    b.HasKey("Id");
 
                     b.HasIndex("AcademicYearId");
 
@@ -342,27 +580,86 @@ namespace AWMService.Infrastructure.Migrations
 
                     b.HasIndex("CheckTypeId");
 
-                    b.HasIndex("DepartmentId");
+                    b.HasIndex("ModifiedBy");
+
+                    b.HasIndex("ModifiedByUserId");
+
+                    b.HasIndex("RevokedBy");
+
+                    b.HasIndex("RevokedByUserId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("DepartmentExperts");
+                    b.HasIndex("DepartmentId", "CheckTypeId", "AcademicYearId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("DepartmentExperts", (string)null);
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.Departments", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("InstituteId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("InstitutesId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InstituteId");
+
+                    b.HasIndex("InstitutesId");
+
+                    b.HasIndex("InstituteId", "Name");
+
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.Directions", b =>
                 {
-                    b.Property<int>("DirectionId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DirectionId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("NameEn")
                         .IsRequired()
@@ -385,118 +682,30 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("SupervisorId")
                         .HasColumnType("int");
 
-                    b.HasKey("DirectionId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("DeletedBy");
+
+                    b.HasIndex("ModifiedBy");
 
                     b.HasIndex("StatusId");
 
                     b.HasIndex("SupervisorId");
 
-                    b.ToTable("Directions");
+                    b.ToTable("Directions", (string)null);
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.EvaluationCriteria", b =>
                 {
-                    b.Property<int>("EvaluationCriteriaId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EvaluationCriteriaId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CommissionTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.HasKey("EvaluationCriteriaId");
-
-                    b.HasIndex("CommissionTypeId");
-
-                    b.ToTable("EvaluationCriteria");
-                });
-
-            modelBuilder.Entity("AWMService.Domain.Entities.EvaluationScores", b =>
-                {
-                    b.Property<int>("EvaluationScoresId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EvaluationScoresId"));
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CommissionMemberId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CriteriaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DefenseGradeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ScoreValue")
-                        .HasColumnType("int");
-
-                    b.HasKey("EvaluationScoresId");
-
-                    b.HasIndex("CommissionMemberId");
-
-                    b.HasIndex("CriteriaId");
-
-                    b.HasIndex("DefenseGradeId");
-
-                    b.ToTable("EvaluationScores");
-                });
-
-            modelBuilder.Entity("AWMService.Domain.Entities.Institutes", b =>
-                {
-                    b.Property<int>("InstituteId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InstituteId"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.HasKey("InstituteId");
-
-                    b.ToTable("Institutes");
-                });
-
-            modelBuilder.Entity("AWMService.Domain.Entities.PeriodTypes", b =>
-                {
-                    b.Property<int>("PeriodTypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PeriodTypeId"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("PeriodTypeId");
-
-                    b.ToTable("PeriodTypes");
-                });
-
-            modelBuilder.Entity("AWMService.Domain.Entities.Periods", b =>
-                {
-                    b.Property<int>("PeriodId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PeriodId"));
-
-                    b.Property<int>("AcademicYearId")
                         .HasColumnType("int");
 
                     b.Property<int>("CreatedBy")
@@ -505,10 +714,301 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeletedBy");
+
+                    b.HasIndex("CommissionTypeId", "Name");
+
+                    b.ToTable("EvaluationCriteria", (string)null);
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.EvaluationScores", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CommissionMemberId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CriteriaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DefenseGradeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ScoreValue")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommissionMemberId");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("CriteriaId");
+
+                    b.HasIndex("DefenseGradeId");
+
+                    b.HasIndex("ModifiedBy");
+
+                    b.ToTable("EvaluationScores", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_EvaluationScores_ScoreValue_NonNegative", "[ScoreValue] >= 0");
+                        });
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.ExternalContacts", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Organization")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Position")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("DeletedBy");
+
+                    b.HasIndex("FullName");
+
+                    b.HasIndex("ModifiedBy");
+
+                    b.HasIndex("Organization", "FullName");
+
+                    b.ToTable("ExternalContacts", (string)null);
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.Institutes", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("Institutes", (string)null);
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.Notifications", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ReadOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedOn");
+
+                    b.HasIndex("UserId", "IsRead", "CreatedOn");
+
+                    b.ToTable("Notifications", (string)null);
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.PeriodTypes", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeletedBy");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("PeriodTypes", (string)null);
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.Periods", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AcademicYearId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AcademicYearsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("PeriodTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PeriodTypesId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -517,43 +1017,86 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
 
-                    b.HasKey("PeriodId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("AcademicYearId");
+                    b.HasIndex("AcademicYearsId");
 
                     b.HasIndex("CreatedBy");
 
+                    b.HasIndex("DeletedBy");
+
+                    b.HasIndex("EndDate");
+
+                    b.HasIndex("ModifiedBy");
+
                     b.HasIndex("PeriodTypeId");
+
+                    b.HasIndex("PeriodTypesId");
+
+                    b.HasIndex("StartDate");
 
                     b.HasIndex("StatusId");
 
-                    b.ToTable("Periods");
+                    b.HasIndex("AcademicYearId", "PeriodTypeId");
+
+                    b.ToTable("Periods", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Periods_Dates", "[StartDate] <= [EndDate]");
+                        });
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.Permissions", b =>
                 {
-                    b.Property<int>("PermissionId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PermissionId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("PermissionId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("DeletedBy");
+
+                    b.HasIndex("ModifiedBy");
 
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Permissions");
+                    b.ToTable("Permissions", (string)null);
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.RolePermissions", b =>
@@ -564,23 +1107,45 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("PermissionId")
                         .HasColumnType("int");
 
+                    b.Property<int>("AssignedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AssignedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("RevokedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("RevokedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("RolesId")
+                        .HasColumnType("int");
+
                     b.HasKey("RoleId", "PermissionId");
+
+                    b.HasIndex("AssignedBy");
 
                     b.HasIndex("PermissionId");
 
-                    b.ToTable("RolePermissions");
+                    b.HasIndex("RevokedBy");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("RolesId");
+
+                    b.ToTable("RolePermissions", (string)null);
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.Roles", b =>
                 {
-                    b.Property<int>("RoleId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -589,55 +1154,142 @@ namespace AWMService.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("RoleId");
+                    b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Roles", (string)null);
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.Settings", b =>
+                {
+                    b.Property<string>("SettingKey")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SettingValue")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SettingKey");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("ModifiedBy");
+
+                    b.HasIndex("SettingKey")
+                        .IsUnique();
+
+                    b.ToTable("Settings", (string)null);
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.Statuses", b =>
                 {
-                    b.Property<int>("StatusId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StatusId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("EntityType")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("StatusId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeletedBy");
 
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Statuses");
+                    b.ToTable("Statuses", (string)null);
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.StudentWork", b =>
                 {
-                    b.Property<int>("StudentWorkId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentWorkId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AcademicYearId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CreatedBy")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("FinalGrade")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
@@ -651,9 +1303,18 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("WorkTypeId")
                         .HasColumnType("int");
 
-                    b.HasKey("StudentWorkId");
+                    b.Property<int?>("WorkTypesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("AcademicYearId");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("DeletedBy");
+
+                    b.HasIndex("ModifiedBy");
 
                     b.HasIndex("StatusId");
 
@@ -663,7 +1324,11 @@ namespace AWMService.Infrastructure.Migrations
 
                     b.HasIndex("WorkTypeId");
 
-                    b.ToTable("StudentWorks");
+                    b.HasIndex("WorkTypesId");
+
+                    b.HasIndex("StudentId", "AcademicYearId", "WorkTypeId");
+
+                    b.ToTable("StudentWork", (string)null);
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.SupervisorApprovals", b =>
@@ -686,6 +1351,24 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ModifiedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("RevokedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RevokedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("RevokedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -697,20 +1380,38 @@ namespace AWMService.Infrastructure.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ModifiedBy");
 
-                    b.ToTable("SupervisorApprovals");
+                    b.HasIndex("ModifiedByUserId");
+
+                    b.HasIndex("RevokedBy");
+
+                    b.HasIndex("RevokedByUserId");
+
+                    b.HasIndex("UserId", "DepartmentId", "AcademicYearId")
+                        .IsUnique();
+
+                    b.ToTable("SupervisorApprovals", (string)null);
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.Topics", b =>
                 {
-                    b.Property<int>("TopicId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TopicId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -720,13 +1421,29 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("DirectionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MaxParticipants")
+                    b.Property<int?>("DirectionsId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("MaxParticipants")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SuperVisorId")
+                    b.Property<int>("SupervisorId")
                         .HasColumnType("int");
 
                     b.Property<string>("TitleEn")
@@ -744,15 +1461,25 @@ namespace AWMService.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.HasKey("TopicId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("CreatedOn");
+
+                    b.HasIndex("DeletedBy");
 
                     b.HasIndex("DirectionId");
 
+                    b.HasIndex("DirectionsId");
+
+                    b.HasIndex("ModifiedBy");
+
                     b.HasIndex("StatusId");
 
-                    b.HasIndex("SuperVisorId");
+                    b.HasIndex("SupervisorId");
 
-                    b.ToTable("Topics");
+                    b.ToTable("Topics", (string)null);
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.UserRoles", b =>
@@ -763,43 +1490,69 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
+                    b.Property<int>("AssignedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AssignedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("RevokedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("RevokedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("RolesId")
+                        .HasColumnType("int");
+
                     b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("AssignedBy");
+
+                    b.HasIndex("RevokedBy");
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("UserRoles");
+                    b.HasIndex("RolesId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("AWMService.Domain.Entities.UserType", b =>
+            modelBuilder.Entity("AWMService.Domain.Entities.UserTypes", b =>
                 {
-                    b.Property<int>("UserTypeId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserTypeId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("UserTypeId");
+                    b.HasKey("Id");
 
-                    b.ToTable("UserTypes");
+                    b.ToTable("UserTypes", (string)null);
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.Users", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DepartmentId")
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DepartmentsId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -826,9 +1579,20 @@ namespace AWMService.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("RefreshToken")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SurName")
                         .HasMaxLength(100)
@@ -837,9 +1601,14 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("UserTypeId")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId");
+                    b.Property<int?>("UserTypesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
+
+                    b.HasIndex("DepartmentsId");
 
                     b.HasIndex("Email")
                         .IsUnique();
@@ -853,16 +1622,20 @@ namespace AWMService.Infrastructure.Migrations
 
                     b.HasIndex("UserTypeId");
 
-                    b.ToTable("Users");
+                    b.HasIndex("UserTypesId");
+
+                    b.HasIndex("LastName", "FirstName");
+
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.WorkChecks", b =>
                 {
-                    b.Property<int>("WorkChecksId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WorkChecksId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CheckTypeId")
                         .HasColumnType("int");
@@ -871,15 +1644,28 @@ namespace AWMService.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Comment")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("ExpertId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("ResultData")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ReviewerId")
+                        .HasColumnType("int");
 
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
@@ -887,56 +1673,126 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("StudentWorkId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("SubmittedOn")
+                    b.Property<DateTime?>("SubmittedOn")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("WorkChecksId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CheckTypeId");
 
+                    b.HasIndex("CheckedOn");
+
+                    b.HasIndex("CreatedBy");
+
                     b.HasIndex("ExpertId");
+
+                    b.HasIndex("ModifiedBy");
+
+                    b.HasIndex("ReviewerId");
 
                     b.HasIndex("StatusId");
 
-                    b.HasIndex("StudentWorkId");
+                    b.HasIndex("SubmittedOn");
 
-                    b.ToTable("WorkChecks");
+                    b.HasIndex("StudentWorkId", "CheckTypeId", "StatusId");
+
+                    b.ToTable("WorkChecks", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_WorkChecks_ExpertOrReviewer", "([ExpertId] IS NOT NULL) OR ([ReviewerId] IS NOT NULL)");
+                        });
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.WorkTypes", b =>
                 {
-                    b.Property<int>("WorkTypeId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WorkTypeId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DeletedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("WorkTypeId");
+                    b.HasKey("Id");
 
-                    b.ToTable("WorkTypes");
+                    b.HasIndex("DeletedBy");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("WorkTypes", (string)null);
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.AcademicYears", b =>
+                {
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("DeletedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.Applications", b =>
                 {
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("AWMService.Domain.Entities.Statuses", "Status")
-                        .WithMany("Applications")
+                        .WithMany()
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AWMService.Domain.Entities.Users", "Student")
-                        .WithMany("Applications")
+                        .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AWMService.Domain.Entities.Topics", "Topic")
-                        .WithMany("Applications")
+                        .WithMany()
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -950,146 +1806,257 @@ namespace AWMService.Infrastructure.Migrations
 
             modelBuilder.Entity("AWMService.Domain.Entities.Attachments", b =>
                 {
-                    b.HasOne("AWMService.Domain.Entities.Users", "UploadedBy")
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("DeletedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.StudentWork", "StudentWork")
                         .WithMany("Attachments")
-                        .HasForeignKey("UploadedById")
+                        .HasForeignKey("StudentWorkId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("AWMService.Domain.Entities.Users", "UploadedByUser")
+                        .WithMany()
+                        .HasForeignKey("UploadedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("UploadedBy");
+                    b.HasOne("AWMService.Domain.Entities.WorkChecks", "WorkCheck")
+                        .WithMany("Attachments")
+                        .HasForeignKey("WorkCheckId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("StudentWork");
+
+                    b.Navigation("UploadedByUser");
+
+                    b.Navigation("WorkCheck");
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.CheckTypes", b =>
+                {
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("DeletedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.CommissionMembers", b =>
                 {
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("AssignedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("AWMService.Domain.Entities.Commissions", "Commission")
-                        .WithMany("CommissionMembers")
+                        .WithMany("Members")
                         .HasForeignKey("CommissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("AWMService.Domain.Entities.ExternalContacts", "ExternalContact")
+                        .WithMany()
+                        .HasForeignKey("ExternalContactId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("AWMService.Domain.Entities.Users", "Member")
-                        .WithMany("CommissionMembers")
+                        .WithMany()
                         .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("RemovedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Commission");
+
+                    b.Navigation("ExternalContact");
 
                     b.Navigation("Member");
                 });
 
+            modelBuilder.Entity("AWMService.Domain.Entities.CommissionTypes", b =>
+                {
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("DeletedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("AWMService.Domain.Entities.Commissions", b =>
                 {
-                    b.HasOne("AWMService.Domain.Entities.CommissionTypes", "CommissionTypes")
-                        .WithMany("Commissions")
+                    b.HasOne("AWMService.Domain.Entities.CommissionTypes", "CommissionType")
+                        .WithMany()
                         .HasForeignKey("CommissionTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AWMService.Domain.Entities.Department", "Department")
+                    b.HasOne("AWMService.Domain.Entities.CommissionTypes", null)
                         .WithMany("Commissions")
+                        .HasForeignKey("CommissionTypesId");
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("DeletedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Departments", "Department")
+                        .WithMany()
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AWMService.Domain.Entities.Periods", "Periods")
-                        .WithMany("Commissions")
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Periods", "Period")
+                        .WithMany()
                         .HasForeignKey("PeriodId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AWMService.Domain.Entities.Users", "Secretary")
-                        .WithMany("Commissions")
+                        .WithMany()
                         .HasForeignKey("SecretaryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("CommissionTypes");
+                    b.Navigation("CommissionType");
 
                     b.Navigation("Department");
 
-                    b.Navigation("Periods");
+                    b.Navigation("Period");
 
                     b.Navigation("Secretary");
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.DefenseGrades", b =>
                 {
-                    b.HasOne("AWMService.Domain.Entities.DefenseSchedules", "DefenseScheduled")
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.DefenseSchedules", "DefenseSchedule")
                         .WithMany("DefenseGrades")
-                        .HasForeignKey("DefenseScheduledId")
+                        .HasForeignKey("DefenseScheduleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("AWMService.Domain.Entities.Statuses", "Status")
-                        .WithMany("DefenseGrades")
+                        .WithMany()
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("DefenseScheduled");
+                    b.Navigation("DefenseSchedule");
 
                     b.Navigation("Status");
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.DefenseSchedules", b =>
                 {
-                    b.HasOne("AWMService.Domain.Entities.Commissions", "Commissions")
-                        .WithMany("DefenseSchedules")
+                    b.HasOne("AWMService.Domain.Entities.Commissions", "Commission")
+                        .WithMany()
                         .HasForeignKey("CommissionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AWMService.Domain.Entities.StudentWork", "StudentWorks")
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("DeletedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.StudentWork", "StudentWork")
                         .WithMany("DefenseSchedules")
                         .HasForeignKey("StudentWorkId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Commissions");
+                    b.Navigation("Commission");
 
-                    b.Navigation("StudentWorks");
-                });
-
-            modelBuilder.Entity("AWMService.Domain.Entities.Department", b =>
-                {
-                    b.HasOne("AWMService.Domain.Entities.Institutes", "Institute")
-                        .WithMany("Departments")
-                        .HasForeignKey("InstituteId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Institute");
+                    b.Navigation("StudentWork");
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.DepartmentExperts", b =>
                 {
                     b.HasOne("AWMService.Domain.Entities.AcademicYears", "AcademicYear")
-                        .WithMany("DepartmentExperts")
+                        .WithMany()
                         .HasForeignKey("AcademicYearId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AWMService.Domain.Entities.Users", "AssignedByUser")
-                        .WithMany("AssignedDepartmentExperts")
+                        .WithMany()
                         .HasForeignKey("AssignedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AWMService.Domain.Entities.CheckTypes", "CheckType")
-                        .WithMany("DepartmentExperts")
+                        .WithMany()
                         .HasForeignKey("CheckTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AWMService.Domain.Entities.Department", "Department")
-                        .WithMany("DepartmentExperts")
+                    b.HasOne("AWMService.Domain.Entities.Departments", "Department")
+                        .WithMany()
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Users", "ModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("ModifiedByUserId");
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("RevokedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Users", "RevokedByUser")
+                        .WithMany()
+                        .HasForeignKey("RevokedByUserId");
+
                     b.HasOne("AWMService.Domain.Entities.Users", "User")
-                        .WithMany("DepartmentExperts")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1102,19 +2069,54 @@ namespace AWMService.Infrastructure.Migrations
 
                     b.Navigation("Department");
 
+                    b.Navigation("ModifiedByUser");
+
+                    b.Navigation("RevokedByUser");
+
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.Departments", b =>
+                {
+                    b.HasOne("AWMService.Domain.Entities.Institutes", "Institute")
+                        .WithMany()
+                        .HasForeignKey("InstituteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.Institutes", null)
+                        .WithMany("Departments")
+                        .HasForeignKey("InstitutesId");
+
+                    b.Navigation("Institute");
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.Directions", b =>
                 {
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("DeletedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("AWMService.Domain.Entities.Statuses", "Status")
-                        .WithMany("Directions")
+                        .WithMany()
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AWMService.Domain.Entities.Users", "Supervisor")
-                        .WithMany("Directions")
+                        .WithMany()
                         .HasForeignKey("SupervisorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1127,19 +2129,30 @@ namespace AWMService.Infrastructure.Migrations
             modelBuilder.Entity("AWMService.Domain.Entities.EvaluationCriteria", b =>
                 {
                     b.HasOne("AWMService.Domain.Entities.CommissionTypes", "CommissionType")
-                        .WithMany("EvaluationCriteria")
+                        .WithMany()
                         .HasForeignKey("CommissionTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("DeletedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CommissionType");
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.EvaluationScores", b =>
                 {
-                    b.HasOne("AWMService.Domain.Entities.Users", "CommissionMember")
-                        .WithMany("EvaluationScores")
+                    b.HasOne("AWMService.Domain.Entities.CommissionMembers", "CommissionMember")
+                        .WithMany()
                         .HasForeignKey("CommissionMemberId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1152,8 +2165,13 @@ namespace AWMService.Infrastructure.Migrations
                     b.HasOne("AWMService.Domain.Entities.DefenseGrades", "DefenseGrade")
                         .WithMany("EvaluationScores")
                         .HasForeignKey("DefenseGradeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CommissionMember");
 
@@ -1162,91 +2180,221 @@ namespace AWMService.Infrastructure.Migrations
                     b.Navigation("DefenseGrade");
                 });
 
-            modelBuilder.Entity("AWMService.Domain.Entities.Periods", b =>
+            modelBuilder.Entity("AWMService.Domain.Entities.ExternalContacts", b =>
                 {
-                    b.HasOne("AWMService.Domain.Entities.AcademicYears", "AcademicYear")
-                        .WithMany("Periods")
-                        .HasForeignKey("AcademicYearId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("AWMService.Domain.Entities.Users", "CreatedByUser")
-                        .WithMany("Periods")
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
                         .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AWMService.Domain.Entities.PeriodTypes", "PeriodType")
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("DeletedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.Notifications", b =>
+                {
+                    b.HasOne("AWMService.Domain.Entities.Users", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.PeriodTypes", b =>
+                {
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("DeletedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.Periods", b =>
+                {
+                    b.HasOne("AWMService.Domain.Entities.AcademicYears", "AcademicYear")
+                        .WithMany()
+                        .HasForeignKey("AcademicYearId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.AcademicYears", null)
                         .WithMany("Periods")
+                        .HasForeignKey("AcademicYearsId");
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("DeletedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.PeriodTypes", "PeriodType")
+                        .WithMany()
                         .HasForeignKey("PeriodTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AWMService.Domain.Entities.Statuses", "Status")
+                    b.HasOne("AWMService.Domain.Entities.PeriodTypes", null)
                         .WithMany("Periods")
+                        .HasForeignKey("PeriodTypesId");
+
+                    b.HasOne("AWMService.Domain.Entities.Statuses", "Status")
+                        .WithMany()
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("AcademicYear");
 
-                    b.Navigation("CreatedByUser");
-
                     b.Navigation("PeriodType");
 
                     b.Navigation("Status");
                 });
 
+            modelBuilder.Entity("AWMService.Domain.Entities.Permissions", b =>
+                {
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("DeletedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("AWMService.Domain.Entities.RolePermissions", b =>
                 {
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("AssignedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("AWMService.Domain.Entities.Permissions", "Permission")
-                        .WithMany("RolePermissions")
+                        .WithMany()
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("RevokedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("AWMService.Domain.Entities.Roles", "Role")
-                        .WithMany("RolePermissions")
+                        .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.Roles", null)
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("RolesId");
 
                     b.Navigation("Permission");
 
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("AWMService.Domain.Entities.Settings", b =>
+                {
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.Statuses", b =>
+                {
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("DeletedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("AWMService.Domain.Entities.StudentWork", b =>
                 {
                     b.HasOne("AWMService.Domain.Entities.AcademicYears", "AcademicYear")
-                        .WithMany("StudentWorks")
+                        .WithMany()
                         .HasForeignKey("AcademicYearId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("DeletedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("AWMService.Domain.Entities.Statuses", "Status")
-                        .WithMany("StudentWorks")
+                        .WithMany()
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AWMService.Domain.Entities.Users", "Student")
-                        .WithMany("StudentWorks")
+                        .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AWMService.Domain.Entities.Topics", "Topic")
-                        .WithMany("StudentWorks")
+                        .WithMany()
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AWMService.Domain.Entities.WorkTypes", "WorkType")
-                        .WithMany("StudentWorks")
+                        .WithMany()
                         .HasForeignKey("WorkTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.WorkTypes", null)
+                        .WithMany("StudentWorks")
+                        .HasForeignKey("WorkTypesId");
 
                     b.Navigation("AcademicYear");
 
@@ -1262,25 +2410,43 @@ namespace AWMService.Infrastructure.Migrations
             modelBuilder.Entity("AWMService.Domain.Entities.SupervisorApprovals", b =>
                 {
                     b.HasOne("AWMService.Domain.Entities.AcademicYears", "AcademicYear")
-                        .WithMany("SupervisorApprovals")
+                        .WithMany()
                         .HasForeignKey("AcademicYearId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AWMService.Domain.Entities.Users", "ApprovedByUser")
-                        .WithMany("ApprovedByUsers")
+                        .WithMany()
                         .HasForeignKey("ApprovedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AWMService.Domain.Entities.Department", "Department")
-                        .WithMany("SupervisorApprovals")
+                    b.HasOne("AWMService.Domain.Entities.Departments", "Department")
+                        .WithMany()
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Users", "ModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("ModifiedByUserId");
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("RevokedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Users", "RevokedByUser")
+                        .WithMany()
+                        .HasForeignKey("RevokedByUserId");
+
                     b.HasOne("AWMService.Domain.Entities.Users", "User")
-                        .WithMany("SupervisorApprovals")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1291,26 +2457,50 @@ namespace AWMService.Infrastructure.Migrations
 
                     b.Navigation("Department");
 
+                    b.Navigation("ModifiedByUser");
+
+                    b.Navigation("RevokedByUser");
+
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.Topics", b =>
                 {
-                    b.HasOne("AWMService.Domain.Entities.Directions", "Direction")
-                        .WithMany("Topics")
-                        .HasForeignKey("DirectionId")
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AWMService.Domain.Entities.Statuses", "Status")
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("DeletedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Directions", "Direction")
+                        .WithMany()
+                        .HasForeignKey("DirectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.Directions", null)
                         .WithMany("Topics")
+                        .HasForeignKey("DirectionsId");
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Statuses", "Status")
+                        .WithMany()
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AWMService.Domain.Entities.Users", "SuperVisor")
-                        .WithMany("Topics")
-                        .HasForeignKey("SuperVisorId")
+                    b.HasOne("AWMService.Domain.Entities.Users", "Supervisor")
+                        .WithMany()
+                        .HasForeignKey("SupervisorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1318,41 +2508,63 @@ namespace AWMService.Infrastructure.Migrations
 
                     b.Navigation("Status");
 
-                    b.Navigation("SuperVisor");
+                    b.Navigation("Supervisor");
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.UserRoles", b =>
                 {
-                    b.HasOne("AWMService.Domain.Entities.Roles", "Roles")
-                        .WithMany("UserRoles")
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("AssignedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("RevokedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.Roles", "Role")
+                        .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AWMService.Domain.Entities.Users", "Users")
+                    b.HasOne("AWMService.Domain.Entities.Roles", null)
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RolesId");
+
+                    b.HasOne("AWMService.Domain.Entities.Users", "User")
                         .WithMany("UserRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Roles");
+                    b.Navigation("Role");
 
-                    b.Navigation("Users");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.Users", b =>
                 {
-                    b.HasOne("AWMService.Domain.Entities.Department", "Department")
-                        .WithMany("Users")
+                    b.HasOne("AWMService.Domain.Entities.Departments", "Department")
+                        .WithMany()
                         .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("AWMService.Domain.Entities.UserType", "UserType")
+                    b.HasOne("AWMService.Domain.Entities.Departments", null)
                         .WithMany("Users")
+                        .HasForeignKey("DepartmentsId");
+
+                    b.HasOne("AWMService.Domain.Entities.UserTypes", "UserType")
+                        .WithMany()
                         .HasForeignKey("UserTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("AWMService.Domain.Entities.UserTypes", null)
+                        .WithMany("Users")
+                        .HasForeignKey("UserTypesId");
 
                     b.Navigation("Department");
 
@@ -1367,13 +2579,29 @@ namespace AWMService.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("AWMService.Domain.Entities.Users", "Expert")
-                        .WithMany("WorkChecks")
+                        .WithMany()
                         .HasForeignKey("ExpertId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AWMService.Domain.Entities.ExternalContacts", "Reviewer")
+                        .WithMany()
+                        .HasForeignKey("ReviewerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("AWMService.Domain.Entities.Statuses", "Status")
-                        .WithMany("WorkChecks")
+                        .WithMany()
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1381,48 +2609,46 @@ namespace AWMService.Infrastructure.Migrations
                     b.HasOne("AWMService.Domain.Entities.StudentWork", "StudentWork")
                         .WithMany("WorkChecks")
                         .HasForeignKey("StudentWorkId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("CheckType");
 
                     b.Navigation("Expert");
 
+                    b.Navigation("Reviewer");
+
                     b.Navigation("Status");
 
                     b.Navigation("StudentWork");
                 });
 
+            modelBuilder.Entity("AWMService.Domain.Entities.WorkTypes", b =>
+                {
+                    b.HasOne("AWMService.Domain.Entities.Users", null)
+                        .WithMany()
+                        .HasForeignKey("DeletedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("AWMService.Domain.Entities.AcademicYears", b =>
                 {
-                    b.Navigation("DepartmentExperts");
-
                     b.Navigation("Periods");
-
-                    b.Navigation("StudentWorks");
-
-                    b.Navigation("SupervisorApprovals");
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.CheckTypes", b =>
                 {
-                    b.Navigation("DepartmentExperts");
-
                     b.Navigation("WorkChecks");
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.CommissionTypes", b =>
                 {
                     b.Navigation("Commissions");
-
-                    b.Navigation("EvaluationCriteria");
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.Commissions", b =>
                 {
-                    b.Navigation("CommissionMembers");
-
-                    b.Navigation("DefenseSchedules");
+                    b.Navigation("Members");
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.DefenseGrades", b =>
@@ -1435,14 +2661,8 @@ namespace AWMService.Infrastructure.Migrations
                     b.Navigation("DefenseGrades");
                 });
 
-            modelBuilder.Entity("AWMService.Domain.Entities.Department", b =>
+            modelBuilder.Entity("AWMService.Domain.Entities.Departments", b =>
                 {
-                    b.Navigation("Commissions");
-
-                    b.Navigation("DepartmentExperts");
-
-                    b.Navigation("SupervisorApprovals");
-
                     b.Navigation("Users");
                 });
 
@@ -1466,16 +2686,6 @@ namespace AWMService.Infrastructure.Migrations
                     b.Navigation("Periods");
                 });
 
-            modelBuilder.Entity("AWMService.Domain.Entities.Periods", b =>
-                {
-                    b.Navigation("Commissions");
-                });
-
-            modelBuilder.Entity("AWMService.Domain.Entities.Permissions", b =>
-                {
-                    b.Navigation("RolePermissions");
-                });
-
             modelBuilder.Entity("AWMService.Domain.Entities.Roles", b =>
                 {
                     b.Navigation("RolePermissions");
@@ -1483,73 +2693,28 @@ namespace AWMService.Infrastructure.Migrations
                     b.Navigation("UserRoles");
                 });
 
-            modelBuilder.Entity("AWMService.Domain.Entities.Statuses", b =>
-                {
-                    b.Navigation("Applications");
-
-                    b.Navigation("DefenseGrades");
-
-                    b.Navigation("Directions");
-
-                    b.Navigation("Periods");
-
-                    b.Navigation("StudentWorks");
-
-                    b.Navigation("Topics");
-
-                    b.Navigation("WorkChecks");
-                });
-
             modelBuilder.Entity("AWMService.Domain.Entities.StudentWork", b =>
                 {
+                    b.Navigation("Attachments");
+
                     b.Navigation("DefenseSchedules");
 
                     b.Navigation("WorkChecks");
                 });
 
-            modelBuilder.Entity("AWMService.Domain.Entities.Topics", b =>
-                {
-                    b.Navigation("Applications");
-
-                    b.Navigation("StudentWorks");
-                });
-
-            modelBuilder.Entity("AWMService.Domain.Entities.UserType", b =>
+            modelBuilder.Entity("AWMService.Domain.Entities.UserTypes", b =>
                 {
                     b.Navigation("Users");
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.Users", b =>
                 {
-                    b.Navigation("Applications");
-
-                    b.Navigation("ApprovedByUsers");
-
-                    b.Navigation("AssignedDepartmentExperts");
-
-                    b.Navigation("Attachments");
-
-                    b.Navigation("CommissionMembers");
-
-                    b.Navigation("Commissions");
-
-                    b.Navigation("DepartmentExperts");
-
-                    b.Navigation("Directions");
-
-                    b.Navigation("EvaluationScores");
-
-                    b.Navigation("Periods");
-
-                    b.Navigation("StudentWorks");
-
-                    b.Navigation("SupervisorApprovals");
-
-                    b.Navigation("Topics");
-
                     b.Navigation("UserRoles");
+                });
 
-                    b.Navigation("WorkChecks");
+            modelBuilder.Entity("AWMService.Domain.Entities.WorkChecks", b =>
+                {
+                    b.Navigation("Attachments");
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.WorkTypes", b =>

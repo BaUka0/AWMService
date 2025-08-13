@@ -71,11 +71,12 @@ namespace AWMService.Application.UseCases.Auth.Commands.Login
                     Id = user.Id,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    Roles = roles.ToList(),
+                    Email = user.Email,
+                    Roles = roles.ToList()
                 }
             };
 
-            return Result.Success(result);
+            return result;
         }
     }
 }

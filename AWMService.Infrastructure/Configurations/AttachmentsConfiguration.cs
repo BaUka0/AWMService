@@ -29,11 +29,11 @@ namespace AWMService.Infrastructure.Configurations
             e.HasOne(x => x.StudentWork)
                 .WithMany(sw => sw.Attachments)
                 .HasForeignKey(x => x.StudentWorkId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
             e.HasOne(x => x.WorkCheck)
                 .WithMany(wc => wc.Attachments)
                 .HasForeignKey(x => x.WorkCheckId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
             e.HasOne(x => x.UploadedByUser)
                 .WithMany()
                 .HasForeignKey(x => x.UploadedBy)

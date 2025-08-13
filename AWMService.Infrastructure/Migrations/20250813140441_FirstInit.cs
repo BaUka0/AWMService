@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AWMService.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class firstinit : Migration
+    public partial class FirstInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -92,6 +92,9 @@ namespace AWMService.Infrastructure.Migrations
                     Login = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     IIN = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: true),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RefreshToken = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DepartmentId = table.Column<int>(type: "int", nullable: true),
                     DepartmentsId = table.Column<int>(type: "int", nullable: true),
                     UserTypesId = table.Column<int>(type: "int", nullable: true)
@@ -412,8 +415,7 @@ namespace AWMService.Infrastructure.Migrations
                     AssignedBy = table.Column<int>(type: "int", nullable: false),
                     RevokedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
                     RevokedBy = table.Column<int>(type: "int", nullable: true),
-                    RolesId = table.Column<int>(type: "int", nullable: true),
-                    UsersId = table.Column<int>(type: "int", nullable: true)
+                    RolesId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -447,11 +449,6 @@ namespace AWMService.Infrastructure.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserRoles_Users_UsersId",
-                        column: x => x.UsersId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -1347,8 +1344,7 @@ namespace AWMService.Infrastructure.Migrations
                         name: "FK_Attachments_StudentWork_StudentWorkId",
                         column: x => x.StudentWorkId,
                         principalTable: "StudentWork",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Attachments_Users_DeletedBy",
                         column: x => x.DeletedBy,
@@ -2106,11 +2102,6 @@ namespace AWMService.Infrastructure.Migrations
                 name: "IX_UserRoles_UserId",
                 table: "UserRoles",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRoles_UsersId",
-                table: "UserRoles",
-                column: "UsersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_DepartmentId",

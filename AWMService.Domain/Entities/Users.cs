@@ -1,5 +1,4 @@
-﻿
-using AWMService.Domain.Commons;
+﻿using AWMService.Domain.Commons;
 namespace AWMService.Domain.Entities
 {
     public class Users : EntityBase

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AWMService.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250810192604_firstinit")]
-    partial class firstinit
+    [Migration("20250813140441_FirstInit")]
+    partial class FirstInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1508,9 +1508,6 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int?>("RolesId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UsersId")
-                        .HasColumnType("int");
-
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("AssignedBy");
@@ -1522,8 +1519,6 @@ namespace AWMService.Infrastructure.Migrations
                     b.HasIndex("RolesId");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UsersId");
 
                     b.ToTable("UserRoles", (string)null);
                 });
@@ -1587,9 +1582,20 @@ namespace AWMService.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("RefreshToken")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SurName")
                         .HasMaxLength(100)
@@ -1816,7 +1822,7 @@ namespace AWMService.Infrastructure.Migrations
                     b.HasOne("AWMService.Domain.Entities.StudentWork", "StudentWork")
                         .WithMany("Attachments")
                         .HasForeignKey("StudentWorkId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("AWMService.Domain.Entities.Users", "UploadedByUser")
                         .WithMany()
@@ -2532,14 +2538,10 @@ namespace AWMService.Infrastructure.Migrations
                         .HasForeignKey("RolesId");
 
                     b.HasOne("AWMService.Domain.Entities.Users", "User")
-                        .WithMany()
+                        .WithMany("UserRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("AWMService.Domain.Entities.Users", null)
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UsersId");
 
                     b.Navigation("Role");
 

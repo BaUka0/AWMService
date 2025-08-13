@@ -49,6 +49,11 @@ namespace AWMService.Infrastructure.Configurations
              .WithMany()
              .HasForeignKey(x => x.UserTypeId)
              .OnDelete(DeleteBehavior.Restrict);
+            e.HasMany(x => x.UserRoles)
+             .WithOne(ur => ur.User)
+             .HasForeignKey(ur => ur.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
+
             e.HasOne(x => x.Department)
              .WithMany()
              .HasForeignKey(x => x.DepartmentId)

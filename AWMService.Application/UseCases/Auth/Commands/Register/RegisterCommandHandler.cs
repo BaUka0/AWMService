@@ -44,24 +44,36 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
                 Email = request.Email,
                 Login = request.Email,
                 PasswordHash = _passwordHasher.HashPassword(request.Password),
+                UserTypeId = 1 //TODO: надо переделать так чтобы данные брались из request-а
             };
-
-            foreach (var roleId in request.RoleIds)
-            {
-                user.UserRoles.Add(new UserRoles
-                {
-                    RoleId = roleId,
-                    User = user,
-                    AssignedOn = DateTime.UtcNow,
-                    AssignedBy = 0
-                });
-            }
 
             await _unitOfWork.BeginTransactionAsync(ct);
             try
             {
                 await _usersRepository.AddUserAsync(user, ct);
                 await _unitOfWork.CommitAsync(ct);
+
+                await _unitOfWork.BeginTransactionAsync(ct);
+                try
+                {
+                    foreach (var roleId in request.RoleIds)
+                    {
+                        user.UserRoles.Add(new UserRoles
+                        {
+                            UserId = user.Id,
+                            RoleId = roleId,
+                            AssignedOn = DateTime.UtcNow,
+                            AssignedBy = 0
+                        });
+                    }
+
+                    await _unitOfWork.CommitAsync(ct);
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackAsync(ct);
+                    return Result.Failure<AuthResult>(new Error(ErrorCode.InternalServerError, "Failed to create userrole relations"));
+                }
             }
             catch
             {
@@ -81,7 +93,7 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
 
             var accessToken = _tokenService.GenerateAccessToken(savedUser, roles, permissions);
             var refreshToken = _tokenService.GenerateRefreshToken();
-            
+
             await _unitOfWork.BeginTransactionAsync(ct);
             try
             {
@@ -110,7 +122,7 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
                 }
             };
 
-            return Result.Success(result);
+            return result;
         }
     }
 }
