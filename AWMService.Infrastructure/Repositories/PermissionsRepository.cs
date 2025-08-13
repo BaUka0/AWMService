@@ -79,7 +79,7 @@ namespace AWMService.Infrastructure.Repositories
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted, ct);
 
             if (perm is null)
-                throw new KeyNotFoundException($"Permission #{id} не найден или удалён.");
+                throw new KeyNotFoundException($"Permission #{id} not found or deleted.");
 
             perm.Name = name.Trim();
             perm.Description = string.IsNullOrWhiteSpace(description) ? null : description;

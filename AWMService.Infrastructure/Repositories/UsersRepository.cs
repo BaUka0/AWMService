@@ -28,6 +28,15 @@ namespace AWMService.Infrastructure.Repositories
             return await _context.Set<Users>()
                 .FirstOrDefaultAsync(u => u.Email == email, ct);
         }
+        public async Task<Users?> GetByEmailWithRolesAsync(string email, CancellationToken ct)
+        {
+            return await _context.Set<Users>()
+                .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                        .ThenInclude(r => r.RolePermissions)
+                            .ThenInclude(rp => rp.Permission)
+                .FirstOrDefaultAsync(u => u.Email == email, ct);
+        }
 
         public async Task<IReadOnlyList<Users>> GetByIdsAsync (IEnumerable<int> ids, CancellationToken ct)
         {

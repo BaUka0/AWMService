@@ -12,6 +12,7 @@ namespace AWMService.Application.Abstractions
         Task<Users?> GetByIdAsync(int id, CancellationToken ct);
         Task<Users?> GetByLoginAsync(string login, CancellationToken ct);
         Task<Users?> GetByEmailAsync(string email, CancellationToken ct);
+        Task<Users?> GetByEmailWithRolesAsync(string email, CancellationToken ct);
         Task<IReadOnlyList<Users>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken ct);
         Task AddUserAsync(Users user, CancellationToken ct);
     }

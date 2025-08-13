@@ -30,7 +30,11 @@ namespace AWMService.Infrastructure.Configurations
              .HasMaxLength(50);
             e.Property(x => x.IIN)
              .HasMaxLength(12);
-
+            e.Property(x => x.PasswordHash)
+             .IsRequired();
+            e.Property(x => x.RefreshToken)
+             .HasMaxLength(500);
+            e.Property(x => x.RefreshTokenExpiryTime);
             e.HasIndex(x => x.Email)
              .IsUnique();
             e.HasIndex(x => x.Login)

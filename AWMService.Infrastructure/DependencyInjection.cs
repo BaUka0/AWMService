@@ -1,8 +1,13 @@
 ﻿using AWMService.Application.Abstractions;
+using AWMService.Application.Abstractions.Services;
 using AWMService.Infrastructure.Data;
 using AWMService.Infrastructure.Repositories;
+using AWMService.Infrastructure.Security;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -13,9 +18,43 @@ public static class DependencyInjection
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         
         services.AddDbContext<AppDbContext>(options =>
-        options.UseSqlServer(connectionString));
-       
-       
+            options.UseSqlServer(connectionString));
+
+        // Configure JwtSettings
+        var jwtSettings = new JwtSettings();
+        configuration.GetSection("JwtSettings").Bind(jwtSettings);
+        services.AddSingleton<IJwtSettings>(jwtSettings);
+        services.AddSingleton(jwtSettings);
+
+        // JWT Authentication
+        var key = Encoding.ASCII.GetBytes(jwtSettings.Secret);
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.RequireHttpsMetadata = false;
+            options.SaveToken = true;
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = true,
+                ValidIssuer = jwtSettings.Issuer,
+                ValidateAudience = true,
+                ValidAudience = jwtSettings.Audience,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero,
+                NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
+                RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+            };
+        });
+
+        services.AddAuthorization();
+
+        // Repositories
         services.AddScoped<IAcademicYearsRepository, AcademicYearsRepository>();
         services.AddScoped<IApplicationsRepository, ApplicationsRepository>();
         services.AddScoped<ICheckTypesRepository, CheckTypesRepository>();
@@ -45,8 +84,11 @@ public static class DependencyInjection
         services.AddScoped<IWorkTypesRepository, WorkTypesRepository>();
         services.AddScoped<IEvaluationCriteriaRepository, EvaluationCriteriaRepository>();
         services.AddScoped<IEvaluationScoresRepository, EvaluationScoresRepository>();
+        
+        // Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+        services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
+        services.AddScoped<ITokenService, JwtTokenService>();
 
         return services;
     }
