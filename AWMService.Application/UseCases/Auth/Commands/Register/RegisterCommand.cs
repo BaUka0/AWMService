@@ -11,5 +11,6 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
         public string Email { get; set; } = null!;
         public string Password { get; set; } = null!;
         public List<int> RoleIds { get; set; } = new List<int>();
+        public int UserTypeId { get; set; }
     }
 }

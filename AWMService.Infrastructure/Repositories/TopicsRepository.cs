@@ -24,9 +24,9 @@ namespace AWMService.Infrastructure.Repositories
 
         public async Task<int> CountAssignedAsync(int topicId, CancellationToken ct)
         {
-            return await _context.Set<Topics>()
+            return await _context.Set<StudentWork>()
                 .AsNoTracking()
-                .CountAsync(t => t.Id == topicId && !t.IsDeleted, ct);
+                .CountAsync(t => t.TopicId == topicId && !t.IsDeleted, ct);
         }
 
 

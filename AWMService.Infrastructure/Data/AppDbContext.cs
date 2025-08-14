@@ -48,43 +48,9 @@ namespace AWMService.Infrastructure.Data
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
-            modelBuilder.ApplyConfiguration(new AcademicYearsConfiguration());
-            modelBuilder.ApplyConfiguration(new ApplicationsConfiguration());
-            modelBuilder.ApplyConfiguration(new AttachmentsConfiguration());
-            modelBuilder.ApplyConfiguration(new CheckTypesConfiguration());
-            modelBuilder.ApplyConfiguration(new CommissionMembersConfiguration());
-            modelBuilder.ApplyConfiguration(new CommissionsConfiguration());
-            modelBuilder.ApplyConfiguration(new CommissionTypesConfiguration());
-            modelBuilder.ApplyConfiguration(new DefenseGradesConfiguration());
-            modelBuilder.ApplyConfiguration(new DefenseSchedulesConfiguration());
-            modelBuilder.ApplyConfiguration(new DepartmentExpertsConfiguration());
-            modelBuilder.ApplyConfiguration(new DepartmentsConfiguration());
-            modelBuilder.ApplyConfiguration(new DirectionsConfiguration());
-            modelBuilder.ApplyConfiguration(new EvaluationCriteriaConfiguration());
-            modelBuilder.ApplyConfiguration(new EvaluationScoresConfiguration());
-            modelBuilder.ApplyConfiguration(new InstitutesConfiguration());
-            modelBuilder.ApplyConfiguration(new PeriodsConfiguration());
-            modelBuilder.ApplyConfiguration(new PeriodTypesConfiguration());
-            modelBuilder.ApplyConfiguration(new PermissionsConfiguration());
-            modelBuilder.ApplyConfiguration(new RolePermissionsConfiguration());
-            modelBuilder.ApplyConfiguration(new RolesConfiguration());
-            modelBuilder.ApplyConfiguration(new StatusesConfiguration());
-            modelBuilder.ApplyConfiguration(new StudentWorkConfiguration());
-            modelBuilder.ApplyConfiguration(new SupervisorApprovalsConfiguration());
-            modelBuilder.ApplyConfiguration(new TopicsConfiguration());
-            modelBuilder.ApplyConfiguration(new UserRolesConfiguration());
-            modelBuilder.ApplyConfiguration(new UsersConfiguration());
-            modelBuilder.ApplyConfiguration(new UserTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new WorkChecksConfiguration());
-            modelBuilder.ApplyConfiguration(new WorkTypesConfiguration());
-            modelBuilder.ApplyConfiguration(new ExternalContactsConfiguration());
-            modelBuilder.ApplyConfiguration(new NotificationsConfiguration());
-            modelBuilder.ApplyConfiguration(new SettingsConfiguration());
-
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
             base.OnModelCreating(modelBuilder);
-
         }
     }
  

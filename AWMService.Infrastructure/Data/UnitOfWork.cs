@@ -45,9 +45,6 @@ namespace AWMService.Infrastructure.Data
             }
         }
 
-        public Task<int> SaveChangesAsync(CancellationToken ct = default)
-            => _ctx.SaveChangesAsync(ct);
-
         public ValueTask DisposeAsync()
             => _tx?.DisposeAsync() ?? ValueTask.CompletedTask;
     }

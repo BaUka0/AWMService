@@ -44,46 +44,34 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
                 Email = request.Email,
                 Login = request.Email,
                 PasswordHash = _passwordHasher.HashPassword(request.Password),
-                UserTypeId = 1 //TODO: надо переделать так чтобы данные брались из request-а
+                UserTypeId = request.UserTypeId
             };
+            
+            foreach (var roleId in request.RoleIds)
+            {
+                user.UserRoles.Add(new UserRoles
+                {
+                    RoleId = roleId,
+                    AssignedOn = DateTime.UtcNow,
+                    AssignedBy = 0
+                });
+            }
 
             await _unitOfWork.BeginTransactionAsync(ct);
             try
             {
                 await _usersRepository.AddUserAsync(user, ct);
                 await _unitOfWork.CommitAsync(ct);
-
-                await _unitOfWork.BeginTransactionAsync(ct);
-                try
-                {
-                    foreach (var roleId in request.RoleIds)
-                    {
-                        user.UserRoles.Add(new UserRoles
-                        {
-                            UserId = user.Id,
-                            RoleId = roleId,
-                            AssignedOn = DateTime.UtcNow,
-                            AssignedBy = 0
-                        });
-                    }
-
-                    await _unitOfWork.CommitAsync(ct);
-                }
-                catch
-                {
-                    await _unitOfWork.RollbackAsync(ct);
-                    return Result.Failure<AuthResult>(new Error(ErrorCode.InternalServerError, "Failed to create userrole relations"));
-                }
             }
             catch
             {
                 await _unitOfWork.RollbackAsync(ct);
-                return Result.Failure<AuthResult>(new Error(ErrorCode.InternalServerError, "Failed to create user"));
+                return Result.Failure<AuthResult>(new Error(ErrorCode.InternalServerError, "Failed to create user with roles."));
             }
-
+            
             var savedUser = await _usersRepository.GetByEmailWithRolesAsync(request.Email, ct);
             if (savedUser == null)
-                return Result.Failure<AuthResult>(new Error(ErrorCode.NotFound, "User not found"));
+                return Result.Failure<AuthResult>(new Error(ErrorCode.NotFound, "Failed to retrieve created user."));
 
             var roles = savedUser.UserRoles.Select(ur => ur.Role.Name);
             var permissions = savedUser.UserRoles
