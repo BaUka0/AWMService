@@ -1,5 +1,6 @@
 ﻿using AWMService.Application.Abstractions.Services;
 using AWMService.Domain.Entities;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -8,12 +9,22 @@ using System.Text;
 
 namespace AWMService.Infrastructure.Security
 {
-    internal class JwtTokenService(JwtSettings jwtSettings) : ITokenService
+    internal class JwtTokenService : ITokenService
     {
+        private readonly JwtSettings _jwtSettings;
+        private readonly ILogger<JwtTokenService> _logger;
+
+        public JwtTokenService(JwtSettings jwtSettings, ILogger<JwtTokenService> logger)
+        {
+            _jwtSettings = jwtSettings;
+            _logger = logger;
+        }
+
         public string GenerateAccessToken(Users user, IEnumerable<string> roles, IEnumerable<string> permissions)
         {
+            _logger.LogInformation("Generating new access token for user ID {UserId}", user.Id);
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(jwtSettings.Secret);
+            var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
 
             var claims = new List<Claim>
             {
@@ -38,12 +49,12 @@ namespace AWMService.Infrastructure.Security
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(jwtSettings.AccessTokenExpirationInMinutes),
+                Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationInMinutes),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256Signature),
-                Issuer = jwtSettings.Issuer,
-                Audience = jwtSettings.Audience
+                Issuer = _jwtSettings.Issuer,
+                Audience = _jwtSettings.Audience
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -52,6 +63,7 @@ namespace AWMService.Infrastructure.Security
 
         public string GenerateRefreshToken()
         {
+            _logger.LogInformation("Generating new refresh token.");
             var randomNumber = new byte[32];
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
@@ -60,17 +72,18 @@ namespace AWMService.Infrastructure.Security
 
         public ClaimsPrincipal ValitadeToken(string token)
         {
+            _logger.LogInformation("Validating a token.");
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(jwtSettings.Secret);
+            var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
 
             var validationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateIssuer = true,
-                ValidIssuer = jwtSettings.Issuer,
+                ValidIssuer = _jwtSettings.Issuer,
                 ValidateAudience = true,
-                ValidAudience = jwtSettings.Audience,
+                ValidAudience = _jwtSettings.Audience,
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero
             };

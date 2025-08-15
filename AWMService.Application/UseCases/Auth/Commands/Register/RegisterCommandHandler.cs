@@ -5,6 +5,7 @@ using AWMService.Domain.Constatns;
 using AWMService.Domain.Entities;
 using KDS.Primitives.FluentResult;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace AWMService.Application.UseCases.Auth.Commands.Register
 {
@@ -15,28 +16,35 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
         private readonly IPasswordHasher _passwordHasher;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtSettings _jwtSettings;
+        private readonly ILogger<RegisterCommandHandler> _logger;
 
         public RegisterCommandHandler(
             IUsersRepository usersRepository, 
             ITokenService tokenService, 
             IPasswordHasher passwordHasher, 
             IUnitOfWork unitOfWork,
-            IJwtSettings jwtSettings)
+            IJwtSettings jwtSettings,
+            ILogger<RegisterCommandHandler> logger)
         {
             _usersRepository = usersRepository;
             _tokenService = tokenService;
             _passwordHasher = passwordHasher;
             _unitOfWork = unitOfWork;
             _jwtSettings = jwtSettings;
+            _logger = logger;
         }
 
         public async Task<Result<AuthResult>> Handle(RegisterCommand request, CancellationToken ct)
         {
+            _logger.LogInformation("Attempting to register new user with email {Email}", request.Email);
+
             var exists = await _usersRepository.GetByEmailAsync(request.Email, ct);
             if (exists != null)
+            {
+                _logger.LogWarning("Registration failed: User with email {Email} already exists.", request.Email);
                 return Result.Failure<AuthResult>(new Error(ErrorCode.Conflict, "User with this email already exists"));
+            }
 
-            // 1. Create the user entity and generate tokens first
             var passwordHash = _passwordHasher.HashPassword(request.Password);
             var refreshToken = _tokenService.GenerateRefreshToken();
             var refreshTokenExpiry = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays);
@@ -50,7 +58,7 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
                 Login = request.Email,
                 PasswordHash = passwordHash,
                 UserTypeId = request.UserTypeId,
-                RefreshToken = refreshToken, // Assign token before saving
+                RefreshToken = refreshToken,
                 RefreshTokenExpiryTime = refreshTokenExpiry
             };
 
@@ -60,27 +68,29 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
                 {
                     RoleId = roleId,
                     AssignedOn = DateTime.UtcNow,
-                    AssignedBy = 0 // System user or placeholder
+                    AssignedBy = 0
                 });
             }
 
-            // 2. Save the user with the refresh token in a single transaction
             await _unitOfWork.BeginTransactionAsync(ct);
             try
             {
                 await _usersRepository.AddUserAsync(user, ct);
                 await _unitOfWork.CommitAsync(ct);
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while creating user with email {Email}", request.Email);
                 await _unitOfWork.RollbackAsync(ct);
                 return Result.Failure<AuthResult>(new Error(ErrorCode.InternalServerError, "Failed to create user."));
             }
             
-            // 3. Retrieve the full user data to get role/permission names for the token and DTO
             var savedUser = await _usersRepository.GetByEmailWithRolesAsync(request.Email, ct);
             if (savedUser == null)
+            {
+                _logger.LogError("Failed to retrieve user {Email} immediately after creation.", request.Email);
                 return Result.Failure<AuthResult>(new Error(ErrorCode.NotFound, "Failed to retrieve created user."));
+            }
 
             var roles = savedUser.UserRoles.Select(ur => ur.Role.Name);
             var permissions = savedUser.UserRoles
@@ -88,13 +98,12 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
                 .Select(rp => rp.Permission.Name)
                 .Distinct();
 
-            // 4. Generate access token and create the result DTO
             var accessToken = _tokenService.GenerateAccessToken(savedUser, roles, permissions);
 
             var result = new AuthResult
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken, // Use the already generated token
+                RefreshToken = refreshToken,
                 ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationInMinutes),
                 User = new UserDto
                 {
@@ -106,6 +115,7 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
                 }
             };
 
+            _logger.LogInformation("User {Email} registered successfully with ID {UserId}", savedUser.Email, savedUser.Id);
             return result;
         }
     }

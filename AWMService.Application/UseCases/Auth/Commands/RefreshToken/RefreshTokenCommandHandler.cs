@@ -4,6 +4,7 @@ using AWMService.Application.DTOs;
 using AWMService.Domain.Constatns;
 using KDS.Primitives.FluentResult;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace AWMService.Application.UseCases.Auth.Commands.RefreshToken
 {
@@ -13,28 +14,39 @@ namespace AWMService.Application.UseCases.Auth.Commands.RefreshToken
         private readonly ITokenService _tokenService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtSettings _jwtSettings;
+        private readonly ILogger<RefreshTokenCommandHandler> _logger;
 
         public RefreshTokenCommandHandler(
             IUsersRepository usersRepository, 
             ITokenService tokenService, 
             IUnitOfWork unitOfWork, 
-            IJwtSettings jwtSettings)
+            IJwtSettings jwtSettings,
+            ILogger<RefreshTokenCommandHandler> logger)
         {
             _usersRepository = usersRepository;
             _tokenService = tokenService;
             _unitOfWork = unitOfWork;
             _jwtSettings = jwtSettings;
+            _logger = logger;
         }
 
         public async Task<Result<AuthResult>> Handle(RefreshTokenCommand request, CancellationToken ct)
         {
+            _logger.LogInformation("Attempting to refresh token.");
+
             var user = await _usersRepository.GetByRefreshTokenAsync(request.RefreshToken, ct);
 
             if (user == null)
+            {
+                _logger.LogWarning("Token refresh failed: No user found for the provided refresh token.");
                 return Result.Failure<AuthResult>(new Error(ErrorCode.Unauthorized, "Invalid refresh token."));
+            }
 
             if (user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            {
+                _logger.LogWarning("Token refresh failed for user {UserId}: Refresh token expired.", user.Id);
                 return Result.Failure<AuthResult>(new Error(ErrorCode.Unauthorized, "Refresh token expired."));
+            }
             
             var roles = user.UserRoles.Select(ur => ur.Role.Name);
             var permissions = user.UserRoles
@@ -53,8 +65,9 @@ namespace AWMService.Application.UseCases.Auth.Commands.RefreshToken
             {
                 await _unitOfWork.CommitAsync(ct);
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while updating refresh token for user {UserId}", user.Id);
                 await _unitOfWork.RollbackAsync(ct);
                 return Result.Failure<AuthResult>(new Error(ErrorCode.InternalServerError, "Failed to update refresh token."));
             }
@@ -74,6 +87,7 @@ namespace AWMService.Application.UseCases.Auth.Commands.RefreshToken
                 }
             };
 
+            _logger.LogInformation("Token refreshed successfully for user {UserId}.", user.Id);
             return result;
         }
     }
