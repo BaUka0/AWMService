@@ -38,6 +38,16 @@ namespace AWMService.Infrastructure.Repositories
                 .FirstOrDefaultAsync(u => u.Email == email, ct);
         }
 
+        public async Task<Users?> GetByRefreshTokenAsync(string refreshToken, CancellationToken ct)
+        {
+            return await _context.Set<Users>()
+                .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                        .ThenInclude(r => r.RolePermissions)
+                            .ThenInclude(rp => rp.Permission)
+                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken, ct);
+        }
+
         public async Task<IReadOnlyList<Users>> GetByIdsAsync (IEnumerable<int> ids, CancellationToken ct)
         {
             var list = await _context.Set<Users>()
