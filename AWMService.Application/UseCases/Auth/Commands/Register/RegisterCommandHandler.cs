@@ -12,6 +12,7 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
     internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<AuthResult>>
     {
         private readonly IUsersRepository _usersRepository;
+        private readonly IRolesRepository _rolesRepository;
         private readonly ITokenService _tokenService;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IUnitOfWork _unitOfWork;
@@ -19,14 +20,16 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
         private readonly ILogger<RegisterCommandHandler> _logger;
 
         public RegisterCommandHandler(
-            IUsersRepository usersRepository, 
-            ITokenService tokenService, 
-            IPasswordHasher passwordHasher, 
+            IUsersRepository usersRepository,
+            IRolesRepository rolesRepository,
+            ITokenService tokenService,
+            IPasswordHasher passwordHasher,
             IUnitOfWork unitOfWork,
             IJwtSettings jwtSettings,
             ILogger<RegisterCommandHandler> logger)
         {
             _usersRepository = usersRepository;
+            _rolesRepository = rolesRepository;
             _tokenService = tokenService;
             _passwordHasher = passwordHasher;
             _unitOfWork = unitOfWork;
@@ -85,37 +88,31 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
                 return Result.Failure<AuthResult>(new Error(ErrorCode.InternalServerError, "Failed to create user."));
             }
             
-            var savedUser = await _usersRepository.GetByEmailWithRolesAsync(request.Email, ct);
-            if (savedUser == null)
-            {
-                _logger.LogError("Failed to retrieve user {Email} immediately after creation.", request.Email);
-                return Result.Failure<AuthResult>(new Error(ErrorCode.NotFound, "Failed to retrieve created user."));
-            }
-
-            var roles = savedUser.UserRoles.Select(ur => ur.Role.Name);
-            var permissions = savedUser.UserRoles
-                .SelectMany(ur => ur.Role.RolePermissions)
+            var roles = await _rolesRepository.GetByIdsWithPermissionsAsync(request.RoleIds, ct);
+            var roleNames = roles.Select(r => r.Name);
+            var permissions = roles
+                .SelectMany(r => r.RolePermissions)
                 .Select(rp => rp.Permission.Name)
                 .Distinct();
 
-            var accessToken = _tokenService.GenerateAccessToken(savedUser, roles, permissions);
+            var accessToken = _tokenService.GenerateAccessToken(user, roleNames, permissions);
 
             var result = new AuthResult
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken,
+                RefreshToken = user.RefreshToken,
                 ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationInMinutes),
                 User = new UserDto
                 {
-                    Id = savedUser.Id,
-                    FirstName = savedUser.FirstName,
-                    LastName = savedUser.LastName,
-                    Email = savedUser.Email,
-                    Roles = roles.ToList()
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    Roles = roleNames.ToList()
                 }
             };
 
-            _logger.LogInformation("User {Email} registered successfully with ID {UserId}", savedUser.Email, savedUser.Id);
+            _logger.LogInformation("User {Email} registered successfully with ID {UserId}", user.Email, user.Id);
             return result;
         }
     }

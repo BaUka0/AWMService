@@ -24,7 +24,17 @@ namespace AWMService.Infrastructure.Repositories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.Name == name, ct);
         }
-        
+
+        public async Task<IReadOnlyList<Roles>> GetByIdsWithPermissionsAsync(IEnumerable<int> roleIds, CancellationToken ct)
+        {
+            return await _context.Set<Roles>()
+                .AsNoTracking()
+                .Where(r => roleIds.Contains(r.Id))
+                .Include(r => r.RolePermissions)
+                .ThenInclude(rp => rp.Permission)
+                .ToListAsync(ct);
+        }
+
         public async Task AddPermissionToRoleAsync(int roleId, int permissionId, int actorUserId, CancellationToken ct)
         {
           

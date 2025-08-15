@@ -11,6 +11,7 @@ namespace AWMService.Application.Abstractions
     {
         Task<Roles?> GetByIdAsync(int id, CancellationToken ct);
         Task<Roles?> GetByNameAsync(string name, CancellationToken ct);
+        Task<IReadOnlyList<Roles>> GetByIdsWithPermissionsAsync(IEnumerable<int> roleIds, CancellationToken ct);
 
         Task AddPermissionToRoleAsync(int roleId, int permissionId, int actorUserId, CancellationToken ct);
         Task RemovePermissionFromRoleAsync(int roleId, int permissionId, int actorUserId, CancellationToken ct);

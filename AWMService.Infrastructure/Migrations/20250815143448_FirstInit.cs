@@ -352,10 +352,11 @@ namespace AWMService.Infrastructure.Migrations
                 name: "Settings",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     SettingKey = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     SettingValue = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Id = table.Column<int>(type: "int", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<int>(type: "int", nullable: false),
                     ModifiedBy = table.Column<int>(type: "int", nullable: true),
@@ -363,7 +364,7 @@ namespace AWMService.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Settings", x => x.SettingKey);
+                    table.PrimaryKey("PK_Settings", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Settings_Users_CreatedBy",
                         column: x => x.CreatedBy,
@@ -1031,6 +1032,7 @@ namespace AWMService.Infrastructure.Migrations
                     WorkTypeId = table.Column<int>(type: "int", nullable: false),
                     StatusId = table.Column<int>(type: "int", nullable: false),
                     FinalGrade = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    TopicsId = table.Column<int>(type: "int", nullable: true),
                     WorkTypesId = table.Column<int>(type: "int", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<int>(type: "int", nullable: false),
@@ -1061,6 +1063,11 @@ namespace AWMService.Infrastructure.Migrations
                         principalTable: "Topics",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_StudentWork_Topics_TopicsId",
+                        column: x => x.TopicsId,
+                        principalTable: "Topics",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_StudentWork_Users_CreatedBy",
                         column: x => x.CreatedBy,
@@ -1986,6 +1993,11 @@ namespace AWMService.Infrastructure.Migrations
                 name: "IX_StudentWork_TopicId",
                 table: "StudentWork",
                 column: "TopicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentWork_TopicsId",
+                table: "StudentWork",
+                column: "TopicsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StudentWork_WorkTypeId",

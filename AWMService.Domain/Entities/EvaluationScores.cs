@@ -4,8 +4,6 @@ namespace AWMService.Domain.Entities
 {
     public class EvaluationScores : AuditableEntity
     {
-        public int Id { get; set; }
-
         public int DefenseGradeId { get; set; }
         public DefenseGrades DefenseGrade { get; set; } = null!;
 

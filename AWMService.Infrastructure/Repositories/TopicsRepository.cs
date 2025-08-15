@@ -32,14 +32,10 @@ namespace AWMService.Infrastructure.Repositories
 
         public async Task<bool> HasFreeSlotAsync(int topicId, CancellationToken ct)
         {
-            var topic = await _context.Set<Topics>()
+            return await _context.Set<Topics>()
                 .AsNoTracking()
-                .FirstOrDefaultAsync(t => t.Id == topicId && !t.IsDeleted, ct);
-
-            if (topic == null) return false;
-            var assigned = await CountAssignedAsync(topicId, ct);
-            return assigned < (topic.MaxParticipants <= 0 ? 1 : topic.MaxParticipants);
-            
+                .Where(t => t.Id == topicId && !t.IsDeleted)
+                .AnyAsync(t => t.StudentWorks.Count(sw => !sw.IsDeleted) < (t.MaxParticipants <= 0 ? 1 : t.MaxParticipants), ct);
         }
         public async Task<IReadOnlyList<Topics>> ListByDirectionAsync(int directionId, CancellationToken ct)
         {

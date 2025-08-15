@@ -9,7 +9,7 @@ namespace AWMService.Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<Settings> e)
         {
             e.ToTable("Settings");
-            e.HasKey(x => x.SettingKey);
+            e.HasKey(x => x.Id);
 
             e.Property(x => x.SettingKey)
                 .HasMaxLength(100);

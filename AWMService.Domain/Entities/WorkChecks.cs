@@ -4,8 +4,6 @@ namespace AWMService.Domain.Entities
 {
     public class WorkChecks : AuditableEntity
     {
-        public int Id { get; set; }
-
         public int StudentWorkId { get; set; }
         public StudentWork StudentWork { get; set; } = null!;
 

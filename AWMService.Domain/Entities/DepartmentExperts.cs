@@ -4,8 +4,6 @@ namespace AWMService.Domain.Entities
 {
     public class DepartmentExperts : EntityBase
     {
-        public int Id { get; set; }
-
         public int UserId { get; set; }
         public Users User { get; set; } = null!;
 

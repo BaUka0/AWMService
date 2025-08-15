@@ -1164,9 +1164,11 @@ namespace AWMService.Infrastructure.Migrations
 
             modelBuilder.Entity("AWMService.Domain.Entities.Settings", b =>
                 {
-                    b.Property<string>("SettingKey")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
@@ -1178,20 +1180,22 @@ namespace AWMService.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<int?>("ModifiedBy")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("SettingKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("SettingValue")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("SettingKey");
+                    b.HasKey("Id");
 
                     b.HasIndex("CreatedBy");
 
@@ -1300,6 +1304,9 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("TopicId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TopicsId")
+                        .HasColumnType("int");
+
                     b.Property<int>("WorkTypeId")
                         .HasColumnType("int");
 
@@ -1321,6 +1328,8 @@ namespace AWMService.Infrastructure.Migrations
                     b.HasIndex("StudentId");
 
                     b.HasIndex("TopicId");
+
+                    b.HasIndex("TopicsId");
 
                     b.HasIndex("WorkTypeId");
 
@@ -2386,6 +2395,10 @@ namespace AWMService.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("AWMService.Domain.Entities.Topics", null)
+                        .WithMany("StudentWorks")
+                        .HasForeignKey("TopicsId");
+
                     b.HasOne("AWMService.Domain.Entities.WorkTypes", "WorkType")
                         .WithMany()
                         .HasForeignKey("WorkTypeId")
@@ -2700,6 +2713,11 @@ namespace AWMService.Infrastructure.Migrations
                     b.Navigation("DefenseSchedules");
 
                     b.Navigation("WorkChecks");
+                });
+
+            modelBuilder.Entity("AWMService.Domain.Entities.Topics", b =>
+                {
+                    b.Navigation("StudentWorks");
                 });
 
             modelBuilder.Entity("AWMService.Domain.Entities.UserTypes", b =>
