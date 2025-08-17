@@ -23,7 +23,7 @@ namespace AWMService.Infrastructure.Configurations
                 .IsUnique(false);
 
             e.HasOne(x => x.CommissionType)
-                .WithMany()
+                .WithMany(ct => ct.Commissions)
                 .HasForeignKey(x => x.CommissionTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
             e.HasOne(x => x.Secretary)

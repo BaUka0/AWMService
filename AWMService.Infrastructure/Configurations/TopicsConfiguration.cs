@@ -29,7 +29,7 @@ namespace AWMService.Infrastructure.Configurations
             e.HasIndex(x => x.CreatedOn);
 
             e.HasOne(x => x.Direction)
-                .WithMany()
+                .WithMany(d => d.Topics)
                 .HasForeignKey(x => x.DirectionId)
                 .OnDelete(DeleteBehavior.Cascade);
             e.HasOne(x => x.Supervisor)

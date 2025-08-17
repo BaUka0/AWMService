@@ -1,5 +1,6 @@
 ﻿using AWMService.Application.Abstractions.Services;
 using AWMService.Domain.Entities;
+using AWMService.Infrastructure.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -43,7 +44,7 @@ namespace AWMService.Infrastructure.Security
 
             foreach (var permission in permissions)
             {
-                claims.Add(new Claim("Permission", permission));
+                claims.Add(new Claim(PermissionClaimTypes.Permission, permission));
             }
 
             var tokenDescriptor = new SecurityTokenDescriptor

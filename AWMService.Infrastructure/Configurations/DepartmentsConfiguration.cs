@@ -17,7 +17,7 @@ namespace AWMService.Infrastructure.Configurations
             e.HasIndex(x => new { x.InstituteId, x.Name });
 
             e.HasOne(x => x.Institute)
-                .WithMany()
+                .WithMany(i => i.Departments)
                 .HasForeignKey(x => x.InstituteId)
                 .OnDelete(DeleteBehavior.Restrict);
         }

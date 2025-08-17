@@ -19,11 +19,11 @@ namespace AWMService.Infrastructure.Configurations
             e.HasIndex(x => x.RoleId);
 
             e.HasOne(x => x.User)
-                .WithMany()
+                .WithMany(u => u.UserRoles)
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
             e.HasOne(x => x.Role)
-                .WithMany()
+                .WithMany(r => r.UserRoles)
                 .HasForeignKey(x => x.RoleId)
                 .OnDelete(DeleteBehavior.Cascade);
 

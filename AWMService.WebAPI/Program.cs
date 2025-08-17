@@ -1,3 +1,5 @@
+using AWMService.WebAPI.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -18,6 +20,9 @@ try
     // Add services to the container.
     builder.Services.AddApplicationServices();
     builder.Services.AddInfrastructureServices(builder.Configuration);
+    builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+    builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
