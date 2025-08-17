@@ -1,7 +1,7 @@
 ﻿using AWMService.Domain.Entities;
 
 
-namespace AWMService.Application.Abstractions
+namespace AWMService.Application.Abstractions.Repositories
 {
     public interface IDefenseSchedulesRepository
     {

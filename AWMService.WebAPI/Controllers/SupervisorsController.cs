@@ -1,4 +1,4 @@
-using AWMService.Application.Abstractions;
+using AWMService.Application.Abstractions.Repositories;
 using AWMService.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

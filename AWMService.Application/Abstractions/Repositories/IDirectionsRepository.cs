@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AWMService.Application.Abstractions
+namespace AWMService.Application.Abstractions.Repositories
 {
     public interface IDirectionsRepository
     {

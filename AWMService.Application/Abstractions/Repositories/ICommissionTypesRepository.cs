@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AWMService.Application.Abstractions
+namespace AWMService.Application.Abstractions.Repositories
 {
     public interface ICommissionTypesRepository
     {

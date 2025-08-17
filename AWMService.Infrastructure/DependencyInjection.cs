@@ -1,4 +1,5 @@
-﻿using AWMService.Application.Abstractions;
+﻿using AWMService.Application.Abstractions.Data;
+using AWMService.Application.Abstractions.Repositories;
 using AWMService.Application.Abstractions.Services;
 using AWMService.Infrastructure.Data;
 using AWMService.Infrastructure.Repositories;

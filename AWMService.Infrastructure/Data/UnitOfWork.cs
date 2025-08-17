@@ -1,4 +1,4 @@
-using AWMService.Application.Abstractions;
+using AWMService.Application.Abstractions.Data;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
