@@ -1,130 +1,100 @@
-using AWMService.Application.Abstractions.Repositories;
-using AWMService.Infrastructure.Data;
+using AWMService.Application.UseCases.Supervisors.Commands.ApproveSupervisors;
+using AWMService.Application.UseCases.Supervisors.Commands.RevokeSupervisors;
+using AWMService.Application.UseCases.Supervisors.Queries.GetTeachers;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace AWMService.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/supervisors")]
-    [Authorize(Policy = "ManageSupervisors")] 
-    public class SupervisorsController : ControllerBase
+    [Authorize(Policy = "ManageSupervisors")]
+    public class SupervisorsController : BaseController
     {
-        private readonly AppDbContext _ctx;
-        private readonly ISupervisorApprovalsRepository _approvals;
-        //private readonly INotificationService _notifications;
+        private readonly IMediator _mediator;
+        private readonly ILogger<SupervisorsController> _logger;
 
-       /* public SupervisorsController(AppDbContext ctx, ISupervisorApprovalsRepository approvals, INotificationService notifications)
+        public SupervisorsController(IMediator mediator, ILogger<SupervisorsController> logger)
         {
-            _ctx = ctx;
-            _approvals = approvals;
-            _notifications = notifications;
-        }*/
-        
-        public record TeacherDto(int UserId, string FullName, string? Email, bool IsApproved);
-        public class ApproveSupervisorsRequest
-        {
-            public int DepartmentId { get; set; }
-            public int AcademicYearId { get; set; }
-            public List<int> UserIds { get; set; } = new();
-            public bool Notify { get; set; } = true;
+            _mediator = mediator;
+            _logger = logger;
         }
-        public class RevokeSupervisorsRequest
-        {
-            public int DepartmentId { get; set; }
-            public int AcademicYearId { get; set; }
-            public List<int> UserIds { get; set; } = new();
-        }
-        
+
         [HttpGet("departments/{departmentId:int}/teachers")]
-        public async Task<ActionResult<IEnumerable<TeacherDto>>> GetTeachers(
+        public async Task<IActionResult> GetTeachers(
             int departmentId,
             [FromQuery] int academicYearId,
             CancellationToken ct)
         {
-            var teachers = await (from u in _ctx.Users.AsNoTracking()
-                                  join ut in _ctx.UserTypes.AsNoTracking() on u.UserTypeId equals ut.Id
-                                  where u.DepartmentId == departmentId &&
-                                        (ut.Name == "преподаватель" || ut.Name == "teacher")
-                                  orderby u.LastName, u.FirstName
-                                  select new { u.Id, u.LastName, u.FirstName, u.SurName, u.Email })
-                                  .ToListAsync(ct);
+            _logger.LogInformation("GetTeachers endpoint triggered for DepartmentId {DepartmentId} and AcademicYearId {AcademicYearId}", departmentId, academicYearId);
 
-            var approvedIds = (await _approvals
-                .ListApprovedUserIdsByDepartmentAndYearAsync(departmentId, academicYearId, ct))
-                .ToHashSet();
-
-            var res = teachers.Select(t => new TeacherDto(
-                t.Id,
-                $"{t.LastName} {t.FirstName}{(string.IsNullOrWhiteSpace(t.SurName) ? "" : " " + t.SurName)}",
-                t.Email,
-                approvedIds.Contains(t.Id)));
-
-            return Ok(res);
-        }
-        
-        [HttpPost("approvals/bulk")]
-        public async Task<IActionResult> ApproveBulk([FromBody] ApproveSupervisorsRequest req, CancellationToken ct)
-        {
-            if (req.UserIds.Count == 0) return BadRequest("UserIds is empty.");
-            
-            var teacherIds = await (from u in _ctx.Users.AsNoTracking()
-                                    join ut in _ctx.UserTypes.AsNoTracking() on u.UserTypeId equals ut.Id
-                                    where u.DepartmentId == req.DepartmentId &&
-                                          (ut.Name == "преподаватель" || ut.Name == "teacher") &&
-                                          req.UserIds.Contains(u.Id)
-                                    select u.Id).ToListAsync(ct);
-
-            var notTeachers = req.UserIds.Except(teacherIds).ToArray();
-            if (notTeachers.Length > 0)
-                return BadRequest($"Следующие пользователи не являются преподавателями указанной кафедры: {string.Join(",", notTeachers)}");
-            
-            var actorId = GetActorUserId();
-            using var tx = await _ctx.Database.BeginTransactionAsync(ct);
-
-            foreach (var uid in req.UserIds.Distinct())
-                await _approvals.ApproveAsync(uid, req.DepartmentId, req.AcademicYearId, actorId, ct);
-
-            await _ctx.SaveChangesAsync(ct);
-            await tx.CommitAsync(ct);
-            
-            if (req.Notify)
+            var query = new GetTeachersQuery
             {
-                var recipients = await _ctx.Users.AsNoTracking()
-                    .Where(u => req.UserIds.Contains(u.Id))
-                    .Select(u => new ValueTuple<int, string?>(u.Id, u.Email))
-                    .ToListAsync(ct);
+                DepartmentId = departmentId,
+                AcademicYearId = academicYearId
+            };
 
-                //await _notifications.NotifySupervisorsApprovedAsync(recipients, req.DepartmentId, req.AcademicYearId, ct);
+            var result = await _mediator.Send(query, ct);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result.Value);
             }
 
-            return NoContent();
+            _logger.LogWarning("GetTeachers for DepartmentId {DepartmentId} failed with error: {Error}", departmentId, result.Error);
+            return GenerateProblemResponse(result.Error);
         }
-        
+
+        [HttpPost("approvals/bulk")]
+        public async Task<IActionResult> ApproveBulk([FromBody] ApproveSupervisorsCommand command, CancellationToken ct)
+        {
+            _logger.LogInformation("ApproveBulk endpoint triggered.");
+
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdClaim, out var actorUserId))
+            {
+                _logger.LogWarning("ApproveBulk failed: Could not parse user ID from claims.");
+                return Unauthorized();
+            }
+            command.ActorUserId = actorUserId;
+
+            var result = await _mediator.Send(command, ct);
+
+            if (result.IsSuccess)
+            {
+                return NoContent();
+            }
+
+            _logger.LogWarning("ApproveBulk failed with error: {Error}", result.Error);
+            return GenerateProblemResponse(result.Error);
+        }
+
         [HttpDelete("approvals/bulk")]
-        public async Task<IActionResult> RevokeBulk([FromBody] RevokeSupervisorsRequest req, CancellationToken ct)
+        public async Task<IActionResult> RevokeBulk([FromBody] RevokeSupervisorsCommand command, CancellationToken ct)
         {
-            if (req.UserIds.Count == 0) return BadRequest("UserIds is empty.");
+            _logger.LogInformation("RevokeBulk endpoint triggered.");
 
-            var actorId = GetActorUserId();
-            using var tx = await _ctx.Database.BeginTransactionAsync(ct);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdClaim, out var actorUserId))
+            {
+                _logger.LogWarning("RevokeBulk failed: Could not parse user ID from claims.");
+                return Unauthorized();
+            }
+            command.ActorUserId = actorUserId;
 
-            foreach (var uid in req.UserIds.Distinct())
-                await _approvals.RevokeAsync(uid, req.DepartmentId, req.AcademicYearId, actorId, ct);
+            var result = await _mediator.Send(command, ct);
 
-            await _ctx.SaveChangesAsync(ct);
-            await tx.CommitAsync(ct);
+            if (result.IsSuccess)
+            {
+                return NoContent();
+            }
 
-            return NoContent();
-        }
-
-        private int GetActorUserId()
-        {
-            var claim = User.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type == "uid");
-            if (claim == null || !int.TryParse(claim.Value, out var id))
-                throw new UnauthorizedAccessException("Actor user id is missing.");
-            return id;
+            _logger.LogWarning("RevokeBulk failed with error: {Error}", result.Error);
+            return GenerateProblemResponse(result.Error);
         }
     }
 }

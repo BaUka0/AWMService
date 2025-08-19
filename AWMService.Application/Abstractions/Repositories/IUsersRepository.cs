@@ -16,5 +16,6 @@ namespace AWMService.Application.Abstractions.Repositories
         Task<Users?> GetByRefreshTokenAsync(string refreshToken, CancellationToken ct);
         Task<IReadOnlyList<Users>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken ct);
         Task AddUserAsync(Users user, CancellationToken ct);
+        Task<IReadOnlyList<Users>> GetTeachersByDepartmentAsync(int departmentId, CancellationToken ct);
     }
 }

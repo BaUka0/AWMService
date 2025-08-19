@@ -74,5 +74,19 @@ namespace AWMService.Infrastructure.Repositories
             _logger.LogInformation("Adding new user with email {Email}", user.Email);
             await _context.Set<Users>().AddAsync(user, ct);
         }
+
+        public async Task<IReadOnlyList<Users>> GetTeachersByDepartmentAsync(int departmentId, CancellationToken ct)
+        {
+            _logger.LogInformation("Fetching teachers for department {DepartmentId}", departmentId);
+            var teacherUserTypeNames = new[] { "Преподаватель", "Teacher" };
+
+            return await _context.Set<Users>()
+                .AsNoTracking()
+                .Include(u => u.UserType)
+                .Where(u => u.DepartmentId == departmentId && u.UserType != null && teacherUserTypeNames.Contains(u.UserType.Name))
+                .OrderBy(u => u.LastName)
+                .ThenBy(u => u.FirstName)
+                .ToListAsync(ct);
+        }
     }
 }
