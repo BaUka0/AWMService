@@ -29,7 +29,7 @@ namespace AWMService.Application.UseCases.Supervisors.Commands.ApproveSupervisor
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
-
+         
         public async Task<Result> Handle(ApproveSupervisorsCommand request, CancellationToken ct)
         {
             _logger.LogInformation("Attempting to approve supervisors for DepartmentId {DepartmentId} and AcademicYearId {AcademicYearId}. UserIds: {UserIds}",
