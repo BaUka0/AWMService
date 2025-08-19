@@ -1,4 +1,4 @@
-﻿using AWMService.Application.Abstractions;
+﻿using AWMService.Application.Abstractions.Repositories;
 using AWMService.Domain.Entities;
 using AWMService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;

@@ -1,4 +1,4 @@
-namespace AWMService.Application.Abstractions;
+namespace AWMService.Application.Abstractions.Data;
 
 public interface IUnitOfWork
 {

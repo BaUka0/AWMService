@@ -46,7 +46,7 @@ namespace AWMService.Infrastructure.Configurations
             e.HasIndex(x => new { x.LastName, x.FirstName });
 
             e.HasOne(x => x.UserType)
-             .WithMany()
+             .WithMany(ut => ut.Users)
              .HasForeignKey(x => x.UserTypeId)
              .OnDelete(DeleteBehavior.Restrict);
             e.HasMany(x => x.UserRoles)
@@ -55,7 +55,7 @@ namespace AWMService.Infrastructure.Configurations
              .OnDelete(DeleteBehavior.Cascade);
 
             e.HasOne(x => x.Department)
-             .WithMany()
+             .WithMany(d => d.Users)
              .HasForeignKey(x => x.DepartmentId)
              .OnDelete(DeleteBehavior.SetNull);
         }

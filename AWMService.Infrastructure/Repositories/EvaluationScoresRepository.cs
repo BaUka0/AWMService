@@ -1,4 +1,4 @@
-﻿using AWMService.Application.Abstractions;
+﻿using AWMService.Application.Abstractions.Repositories;
 using AWMService.Domain.Entities;
 using AWMService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static AWMService.Application.Abstractions.IEvaluationScoresRepository;
+using static AWMService.Application.Abstractions.Repositories.IEvaluationScoresRepository;
 
 namespace AWMService.Infrastructure.Repositories
 {

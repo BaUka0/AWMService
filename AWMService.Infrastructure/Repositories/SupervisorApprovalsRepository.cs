@@ -1,4 +1,4 @@
-﻿using AWMService.Application.Abstractions;
+﻿using AWMService.Application.Abstractions.Repositories;
 using AWMService.Domain.Entities;
 using AWMService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +31,13 @@ namespace AWMService.Infrastructure.Repositories
                 .OrderByDescending(x => x.ApprovedOn)
                 .ToListAsync(ct);
         }
+        
+        public async Task<IReadOnlyList<int>> ListApprovedUserIdsByDepartmentAndYearAsync(int departmentId, int academicYearId, CancellationToken ct)
+            => await _context.Set<SupervisorApprovals>()
+                .AsNoTracking()
+                .Where(x => x.DepartmentId == departmentId && x.AcademicYearId == academicYearId && x.RevokedOn == null)
+                .Select(x => x.UserId)
+                .ToListAsync(ct);
 
         public async Task<bool> IsApprovedAsync(int userId, int departmentId, int academicYearId, CancellationToken ct)
         { 

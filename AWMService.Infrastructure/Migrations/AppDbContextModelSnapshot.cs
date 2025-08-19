@@ -360,9 +360,6 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("CommissionTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CommissionTypesId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
 
@@ -403,8 +400,6 @@ namespace AWMService.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CommissionTypeId");
-
-                    b.HasIndex("CommissionTypesId");
 
                     b.HasIndex("CreatedBy");
 
@@ -607,9 +602,6 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("InstituteId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("InstitutesId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -618,8 +610,6 @@ namespace AWMService.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("InstituteId");
-
-                    b.HasIndex("InstitutesId");
 
                     b.HasIndex("InstituteId", "Name");
 
@@ -976,9 +966,6 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("AcademicYearId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("AcademicYearsId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
 
@@ -1008,9 +995,6 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("PeriodTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PeriodTypesId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -1018,8 +1002,6 @@ namespace AWMService.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AcademicYearsId");
 
                     b.HasIndex("CreatedBy");
 
@@ -1030,8 +1012,6 @@ namespace AWMService.Infrastructure.Migrations
                     b.HasIndex("ModifiedBy");
 
                     b.HasIndex("PeriodTypeId");
-
-                    b.HasIndex("PeriodTypesId");
 
                     b.HasIndex("StartDate");
 
@@ -1119,9 +1099,6 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<DateTime?>("RevokedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("RolesId")
-                        .HasColumnType("int");
-
                     b.HasKey("RoleId", "PermissionId");
 
                     b.HasIndex("AssignedBy");
@@ -1131,8 +1108,6 @@ namespace AWMService.Infrastructure.Migrations
                     b.HasIndex("RevokedBy");
 
                     b.HasIndex("RoleId");
-
-                    b.HasIndex("RolesId");
 
                     b.ToTable("RolePermissions", (string)null);
                 });
@@ -1304,13 +1279,7 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("TopicId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TopicsId")
-                        .HasColumnType("int");
-
                     b.Property<int>("WorkTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("WorkTypesId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -1329,11 +1298,7 @@ namespace AWMService.Infrastructure.Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.HasIndex("TopicsId");
-
                     b.HasIndex("WorkTypeId");
-
-                    b.HasIndex("WorkTypesId");
 
                     b.HasIndex("StudentId", "AcademicYearId", "WorkTypeId");
 
@@ -1430,9 +1395,6 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("DirectionId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DirectionsId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -1480,8 +1442,6 @@ namespace AWMService.Infrastructure.Migrations
 
                     b.HasIndex("DirectionId");
 
-                    b.HasIndex("DirectionsId");
-
                     b.HasIndex("ModifiedBy");
 
                     b.HasIndex("StatusId");
@@ -1499,7 +1459,7 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
-                    b.Property<int>("AssignedBy")
+                    b.Property<int?>("AssignedBy")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("AssignedOn")
@@ -1511,9 +1471,6 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<DateTime?>("RevokedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("RolesId")
-                        .HasColumnType("int");
-
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("AssignedBy");
@@ -1521,8 +1478,6 @@ namespace AWMService.Infrastructure.Migrations
                     b.HasIndex("RevokedBy");
 
                     b.HasIndex("RoleId");
-
-                    b.HasIndex("RolesId");
 
                     b.HasIndex("UserId");
 
@@ -1559,9 +1514,6 @@ namespace AWMService.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("DepartmentId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DepartmentsId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -1610,14 +1562,9 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<int>("UserTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserTypesId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
-
-                    b.HasIndex("DepartmentsId");
 
                     b.HasIndex("Email")
                         .IsUnique();
@@ -1630,8 +1577,6 @@ namespace AWMService.Infrastructure.Migrations
                         .IsUnique();
 
                     b.HasIndex("UserTypeId");
-
-                    b.HasIndex("UserTypesId");
 
                     b.HasIndex("LastName", "FirstName");
 
@@ -1903,14 +1848,10 @@ namespace AWMService.Infrastructure.Migrations
             modelBuilder.Entity("AWMService.Domain.Entities.Commissions", b =>
                 {
                     b.HasOne("AWMService.Domain.Entities.CommissionTypes", "CommissionType")
-                        .WithMany()
+                        .WithMany("Commissions")
                         .HasForeignKey("CommissionTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("AWMService.Domain.Entities.CommissionTypes", null)
-                        .WithMany("Commissions")
-                        .HasForeignKey("CommissionTypesId");
 
                     b.HasOne("AWMService.Domain.Entities.Users", null)
                         .WithMany()
@@ -2088,14 +2029,10 @@ namespace AWMService.Infrastructure.Migrations
             modelBuilder.Entity("AWMService.Domain.Entities.Departments", b =>
                 {
                     b.HasOne("AWMService.Domain.Entities.Institutes", "Institute")
-                        .WithMany()
+                        .WithMany("Departments")
                         .HasForeignKey("InstituteId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("AWMService.Domain.Entities.Institutes", null)
-                        .WithMany("Departments")
-                        .HasForeignKey("InstitutesId");
 
                     b.Navigation("Institute");
                 });
@@ -2230,14 +2167,10 @@ namespace AWMService.Infrastructure.Migrations
             modelBuilder.Entity("AWMService.Domain.Entities.Periods", b =>
                 {
                     b.HasOne("AWMService.Domain.Entities.AcademicYears", "AcademicYear")
-                        .WithMany()
+                        .WithMany("Periods")
                         .HasForeignKey("AcademicYearId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("AWMService.Domain.Entities.AcademicYears", null)
-                        .WithMany("Periods")
-                        .HasForeignKey("AcademicYearsId");
 
                     b.HasOne("AWMService.Domain.Entities.Users", null)
                         .WithMany()
@@ -2256,14 +2189,10 @@ namespace AWMService.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("AWMService.Domain.Entities.PeriodTypes", "PeriodType")
-                        .WithMany()
+                        .WithMany("Periods")
                         .HasForeignKey("PeriodTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("AWMService.Domain.Entities.PeriodTypes", null)
-                        .WithMany("Periods")
-                        .HasForeignKey("PeriodTypesId");
 
                     b.HasOne("AWMService.Domain.Entities.Statuses", "Status")
                         .WithMany()
@@ -2317,14 +2246,10 @@ namespace AWMService.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("AWMService.Domain.Entities.Roles", "Role")
-                        .WithMany()
+                        .WithMany("RolePermissions")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("AWMService.Domain.Entities.Roles", null)
-                        .WithMany("RolePermissions")
-                        .HasForeignKey("RolesId");
 
                     b.Navigation("Permission");
 
@@ -2390,24 +2315,16 @@ namespace AWMService.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("AWMService.Domain.Entities.Topics", "Topic")
-                        .WithMany()
+                        .WithMany("StudentWorks")
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AWMService.Domain.Entities.Topics", null)
-                        .WithMany("StudentWorks")
-                        .HasForeignKey("TopicsId");
-
                     b.HasOne("AWMService.Domain.Entities.WorkTypes", "WorkType")
-                        .WithMany()
+                        .WithMany("StudentWorks")
                         .HasForeignKey("WorkTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("AWMService.Domain.Entities.WorkTypes", null)
-                        .WithMany("StudentWorks")
-                        .HasForeignKey("WorkTypesId");
 
                     b.Navigation("AcademicYear");
 
@@ -2491,14 +2408,10 @@ namespace AWMService.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("AWMService.Domain.Entities.Directions", "Direction")
-                        .WithMany()
+                        .WithMany("Topics")
                         .HasForeignKey("DirectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("AWMService.Domain.Entities.Directions", null)
-                        .WithMany("Topics")
-                        .HasForeignKey("DirectionsId");
 
                     b.HasOne("AWMService.Domain.Entities.Users", null)
                         .WithMany()
@@ -2529,8 +2442,7 @@ namespace AWMService.Infrastructure.Migrations
                     b.HasOne("AWMService.Domain.Entities.Users", null)
                         .WithMany()
                         .HasForeignKey("AssignedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("AWMService.Domain.Entities.Users", null)
                         .WithMany()
@@ -2538,14 +2450,10 @@ namespace AWMService.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("AWMService.Domain.Entities.Roles", "Role")
-                        .WithMany()
+                        .WithMany("UserRoles")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("AWMService.Domain.Entities.Roles", null)
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RolesId");
 
                     b.HasOne("AWMService.Domain.Entities.Users", "User")
                         .WithMany("UserRoles")
@@ -2561,23 +2469,15 @@ namespace AWMService.Infrastructure.Migrations
             modelBuilder.Entity("AWMService.Domain.Entities.Users", b =>
                 {
                     b.HasOne("AWMService.Domain.Entities.Departments", "Department")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("AWMService.Domain.Entities.Departments", null)
-                        .WithMany("Users")
-                        .HasForeignKey("DepartmentsId");
-
                     b.HasOne("AWMService.Domain.Entities.UserTypes", "UserType")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("UserTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("AWMService.Domain.Entities.UserTypes", null)
-                        .WithMany("Users")
-                        .HasForeignKey("UserTypesId");
 
                     b.Navigation("Department");
 

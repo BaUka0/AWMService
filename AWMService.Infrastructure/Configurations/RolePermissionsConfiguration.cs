@@ -19,7 +19,7 @@ namespace AWMService.Infrastructure.Configurations
             e.HasIndex(x => x.PermissionId);
 
             e.HasOne(x => x.Role)
-                .WithMany()
+                .WithMany(r => r.RolePermissions)
                 .HasForeignKey(x => x.RoleId)
                 .OnDelete(DeleteBehavior.Cascade);
             e.HasOne(x => x.Permission)

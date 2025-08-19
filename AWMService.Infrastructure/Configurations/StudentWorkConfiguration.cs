@@ -29,7 +29,7 @@ namespace AWMService.Infrastructure.Configurations
                 .HasForeignKey(x => x.StudentId)
                 .OnDelete(DeleteBehavior.Restrict);
             e.HasOne(x => x.Topic)
-                .WithMany()
+                .WithMany(t => t.StudentWorks)
                 .HasForeignKey(x => x.TopicId)
                 .OnDelete(DeleteBehavior.Restrict);
             e.HasOne(x => x.AcademicYear)
@@ -37,7 +37,7 @@ namespace AWMService.Infrastructure.Configurations
                 .HasForeignKey(x => x.AcademicYearId)
                 .OnDelete(DeleteBehavior.Restrict);
             e.HasOne(x => x.WorkType)
-                .WithMany()
+                .WithMany(wt => wt.StudentWorks)
                 .HasForeignKey(x => x.WorkTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
             e.HasOne(x => x.Status)

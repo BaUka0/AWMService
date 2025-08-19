@@ -26,11 +26,11 @@ namespace AWMService.Infrastructure.Configurations
             e.HasIndex(x => x.EndDate);
 
             e.HasOne(x => x.PeriodType)
-                .WithMany()
+                .WithMany(pt => pt.Periods)
                 .HasForeignKey(x => x.PeriodTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
             e.HasOne(x => x.AcademicYear)
-                .WithMany()
+                .WithMany(ay => ay.Periods)
                 .HasForeignKey(x => x.AcademicYearId)
                 .OnDelete(DeleteBehavior.Restrict);
             e.HasOne(x => x.Status)
