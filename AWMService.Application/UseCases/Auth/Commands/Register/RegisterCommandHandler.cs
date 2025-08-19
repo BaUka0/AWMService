@@ -71,7 +71,7 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
                 {
                     RoleId = roleId,
                     AssignedOn = DateTime.UtcNow,
-                    AssignedBy = 0
+                    AssignedBy = null
                 });
             }
 

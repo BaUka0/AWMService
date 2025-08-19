@@ -1,4 +1,5 @@
 using AWMService.Application.Abstractions;
+using AWMService.Application.Abstractions.Data;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
@@ -7,13 +8,15 @@ namespace AWMService.Infrastructure.Data
     public sealed class UnitOfWork : IUnitOfWork, IAsyncDisposable
     {
         private readonly AppDbContext _ctx;
+        private readonly IAfterCommitQueue _afterCommit;
         private readonly ILogger<UnitOfWork> _logger;
         private IDbContextTransaction? _tx;
 
-        public UnitOfWork(AppDbContext ctx, ILogger<UnitOfWork> logger)
+        public UnitOfWork(AppDbContext ctx, ILogger<UnitOfWork> logger, IAfterCommitQueue afterCommit)
         {
             _ctx = ctx;
             _logger = logger;
+            _afterCommit = afterCommit;
         }
 
         public async Task BeginTransactionAsync(CancellationToken ct = default)
@@ -30,6 +33,7 @@ namespace AWMService.Infrastructure.Data
             {
                 await _ctx.SaveChangesAsync(ct);
                 await _tx.CommitAsync(ct);
+                await _afterCommit.FlushAsync(committed: true, ct);
                 _logger.LogInformation("Committed database transaction {TransactionId}", _tx.TransactionId);
             }
             finally
@@ -45,6 +49,7 @@ namespace AWMService.Infrastructure.Data
             try
             {
                 await _tx.RollbackAsync(ct);
+                await _afterCommit.FlushAsync(committed: false, ct);
                 _logger.LogWarning("Rolled back database transaction {TransactionId}", _tx.TransactionId);
             }
             finally

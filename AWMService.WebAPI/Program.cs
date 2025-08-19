@@ -1,3 +1,4 @@
+using AWMService.Infrastructure.Hubs;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -12,6 +13,8 @@ try
 
     var builder = WebApplication.CreateBuilder(args);
 
+    
+
     builder.Host.UseSerilog((context, configuration) =>
         configuration.ReadFrom.Configuration(context.Configuration));
 
@@ -21,6 +24,7 @@ try
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
+
     builder.Services.AddSwaggerGen();
 
     var app = builder.Build();
@@ -35,10 +39,11 @@ try
     }
 
     app.UseHttpsRedirection();
-
+    app.UseRouting();
     app.UseAuthentication();
     app.UseAuthorization();
 
+    app.MapHub<NotificationHub>("/hubs/notifications");
 
     app.MapControllers();
 

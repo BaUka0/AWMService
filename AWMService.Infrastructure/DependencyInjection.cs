@@ -1,9 +1,16 @@
 ﻿using AWMService.Application.Abstractions;
+using AWMService.Application.Abstractions.Data;
+using AWMService.Application.Abstractions.Notification;
+using AWMService.Application.Abstractions.Notification.Security;
 using AWMService.Application.Abstractions.Services;
 using AWMService.Infrastructure.Data;
+using AWMService.Infrastructure.Hubs;
+using AWMService.Infrastructure.RealTimeNotification;
+using AWMService.Infrastructure.RealTimeNotification.Security;
 using AWMService.Infrastructure.Repositories;
 using AWMService.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -84,11 +91,16 @@ public static class DependencyInjection
         services.AddScoped<IWorkTypesRepository, WorkTypesRepository>();
         services.AddScoped<IEvaluationCriteriaRepository, EvaluationCriteriaRepository>();
         services.AddScoped<IEvaluationScoresRepository, EvaluationScoresRepository>();
-        
+        services.AddScoped<INotificationAccessService, NotificationAccessService>();
         // Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
         services.AddScoped<ITokenService, JwtTokenService>();
+        // Notification
+        services.AddSignalR();
+        services.AddSingleton<IUserIdProvider, JwtSubAsUserIdProvider>();
+        services.AddScoped<IRealTimeNotification, SignalRRealtimeNotifier>();
+        services.AddScoped<IAfterCommitQueue, AfterCommitQueue>();
 
         return services;
     }

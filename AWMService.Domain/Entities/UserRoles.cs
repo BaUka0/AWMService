@@ -10,7 +10,7 @@
 
 
         public DateTime AssignedOn { get; set; }
-        public int AssignedBy { get; set; }
+        public int? AssignedBy { get; set; }
         public DateTime? RevokedOn { get; set; }
         public int? RevokedBy { get; set; }
     }

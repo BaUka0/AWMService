@@ -12,8 +12,8 @@ namespace AWMService.Infrastructure.Configurations
             e.ToTable("UserRoles");
             e.HasKey(x => new { x.UserId, x.RoleId });
 
-            e.Property(x => x.AssignedOn)
-                .IsRequired();
+            e.Property(x => x.AssignedOn);
+                
 
             e.HasIndex(x => x.UserId);
             e.HasIndex(x => x.RoleId);
