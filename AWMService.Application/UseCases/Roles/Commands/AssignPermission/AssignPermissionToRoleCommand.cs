@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AWMService.Application.UseCases.Roles.Commands.AssignPermission
 {
-    public class AssignPermissionToRoleCommand : IRequest<Result>
+    public sealed record AssignPermissionToRoleCommand : IRequest<Result>
     {
         public int RoleId { get; set; }
         public int PermissionId { get; set; }

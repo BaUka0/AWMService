@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace AWMService.Application.UseCases.Supervisors.Commands.RevokeSupervisors
 {
-    public class RevokeSupervisorsCommand : IRequest<Result>
+    public sealed record RevokeSupervisorsCommand : IRequest<Result>
     {
         public int DepartmentId { get; set; }
         public int AcademicYearId { get; set; }

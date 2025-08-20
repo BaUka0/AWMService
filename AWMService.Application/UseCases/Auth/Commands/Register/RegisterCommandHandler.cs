@@ -10,48 +10,29 @@ using Microsoft.Extensions.Logging;
 
 namespace AWMService.Application.UseCases.Auth.Commands.Register
 {
-    internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<AuthResult>>
+    internal class RegisterCommandHandler(
+        IUsersRepository usersRepository,
+        IRolesRepository rolesRepository,
+        ITokenService tokenService,
+        IPasswordHasher passwordHasher,
+        IUnitOfWork unitOfWork,
+        IJwtSettings jwtSettings,
+        ILogger<RegisterCommandHandler> logger) : IRequestHandler<RegisterCommand, Result<AuthResult>>
     {
-        private readonly IUsersRepository _usersRepository;
-        private readonly IRolesRepository _rolesRepository;
-        private readonly ITokenService _tokenService;
-        private readonly IPasswordHasher _passwordHasher;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IJwtSettings _jwtSettings;
-        private readonly ILogger<RegisterCommandHandler> _logger;
-
-        public RegisterCommandHandler(
-            IUsersRepository usersRepository,
-            IRolesRepository rolesRepository,
-            ITokenService tokenService,
-            IPasswordHasher passwordHasher,
-            IUnitOfWork unitOfWork,
-            IJwtSettings jwtSettings,
-            ILogger<RegisterCommandHandler> logger)
-        {
-            _usersRepository = usersRepository;
-            _rolesRepository = rolesRepository;
-            _tokenService = tokenService;
-            _passwordHasher = passwordHasher;
-            _unitOfWork = unitOfWork;
-            _jwtSettings = jwtSettings;
-            _logger = logger;
-        }
-
         public async Task<Result<AuthResult>> Handle(RegisterCommand request, CancellationToken ct)
         {
-            _logger.LogInformation("Attempting to register new user with email {Email}", request.Email);
+            logger.LogInformation("Attempting to register new user with email {Email}", request.Email);
 
-            var exists = await _usersRepository.GetByEmailAsync(request.Email, ct);
+            var exists = await usersRepository.GetByEmailAsync(request.Email, ct);
             if (exists != null)
             {
-                _logger.LogWarning("Registration failed: User with email {Email} already exists.", request.Email);
+                logger.LogWarning("Registration failed: User with email {Email} already exists.", request.Email);
                 return Result.Failure<AuthResult>(new Error(ErrorCode.Conflict, "User with this email already exists"));
             }
 
-            var passwordHash = _passwordHasher.HashPassword(request.Password);
-            var refreshToken = _tokenService.GenerateRefreshToken();
-            var refreshTokenExpiry = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays);
+            var passwordHash = passwordHasher.HashPassword(request.Password);
+            var refreshToken = tokenService.GenerateRefreshToken();
+            var refreshTokenExpiry = DateTime.UtcNow.AddDays(jwtSettings.RefreshTokenExpirationInDays);
 
             var user = new Users
             {
@@ -76,33 +57,33 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
                 });
             }
 
-            await _unitOfWork.BeginTransactionAsync(ct);
+            await unitOfWork.BeginTransactionAsync(ct);
             try
             {
-                await _usersRepository.AddUserAsync(user, ct);
-                await _unitOfWork.CommitAsync(ct);
+                await usersRepository.AddUserAsync(user, ct);
+                await unitOfWork.CommitAsync(ct);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while creating user with email {Email}", request.Email);
-                await _unitOfWork.RollbackAsync(ct);
+                logger.LogError(ex, "An error occurred while creating user with email {Email}", request.Email);
+                await unitOfWork.RollbackAsync(ct);
                 return Result.Failure<AuthResult>(new Error(ErrorCode.InternalServerError, "Failed to create user."));
             }
             
-            var roles = await _rolesRepository.GetByIdsWithPermissionsAsync(request.RoleIds, ct);
+            var roles = await rolesRepository.GetByIdsWithPermissionsAsync(request.RoleIds, ct);
             var roleNames = roles.Select(r => r.Name);
             var permissions = roles
                 .SelectMany(r => r.RolePermissions)
                 .Select(rp => rp.Permission.Name)
                 .Distinct();
 
-            var accessToken = _tokenService.GenerateAccessToken(user, roleNames, permissions);
+            var accessToken = tokenService.GenerateAccessToken(user, roleNames, permissions);
 
             var result = new AuthResult
             {
                 AccessToken = accessToken,
                 RefreshToken = user.RefreshToken,
-                ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationInMinutes),
+                ExpiresAt = DateTime.UtcNow.AddMinutes(jwtSettings.AccessTokenExpirationInMinutes),
                 User = new UserDto
                 {
                     Id = user.Id,
@@ -113,7 +94,7 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
                 }
             };
 
-            _logger.LogInformation("User {Email} registered successfully with ID {UserId}", user.Email, user.Id);
+            logger.LogInformation("User {Email} registered successfully with ID {UserId}", user.Email, user.Id);
             return result;
         }
     }

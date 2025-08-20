@@ -9,46 +9,29 @@ using Microsoft.Extensions.Logging;
 
 namespace AWMService.Application.UseCases.Auth.Commands.Login
 {
-    public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<AuthResult>>
+    public class LoginCommandHandler(
+        IUsersRepository usersRepository,
+        ITokenService tokenService,
+        IPasswordHasher passwordHasher,
+        IUnitOfWork unitOfWork,
+        IJwtSettings jwtSettings,
+        ILogger<LoginCommandHandler> logger) : IRequestHandler<LoginCommand, Result<AuthResult>>
     {
-        private readonly IUsersRepository _usersRepository;
-        private readonly ITokenService _tokenService;
-        private readonly IPasswordHasher _passwordHasher;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IJwtSettings _jwtSettings;
-        private readonly ILogger<LoginCommandHandler> _logger;
-
-        public LoginCommandHandler(
-            IUsersRepository usersRepository, 
-            ITokenService tokenService, 
-            IPasswordHasher passwordHasher, 
-            IUnitOfWork unitOfWork,
-            IJwtSettings jwtSettings,
-            ILogger<LoginCommandHandler> logger)
-        {
-            _usersRepository = usersRepository;
-            _tokenService = tokenService;
-            _passwordHasher = passwordHasher;
-            _unitOfWork = unitOfWork;
-            _jwtSettings = jwtSettings;
-            _logger = logger;
-        }
-
         public async Task<Result<AuthResult>> Handle(LoginCommand request, CancellationToken ct)
         {
-            _logger.LogInformation("Attempting to log in user with email {Email}", request.Email);
+            logger.LogInformation("Attempting to log in user with email {Email}", request.Email);
 
-            var user = await _usersRepository.GetByEmailWithRolesAsync(request.Email, ct);
+            var user = await usersRepository.GetByEmailWithRolesAsync(request.Email, ct);
 
             if (user == null)
             {
-                _logger.LogWarning("Login failed: User with email {Email} not found.", request.Email);
+                logger.LogWarning("Login failed: User with email {Email} not found.", request.Email);
                 return Result.Failure<AuthResult>(new Error(ErrorCode.NotFound, "User not found"));
             }
 
-            if (!_passwordHasher.VerifyPassword(request.Password, user.PasswordHash))
+            if (!passwordHasher.VerifyPassword(request.Password, user.PasswordHash))
             {
-                _logger.LogWarning("Login failed: Invalid password for user with email {Email}.", request.Email);
+                logger.LogWarning("Login failed: Invalid password for user with email {Email}.", request.Email);
                 return Result.Failure<AuthResult>(new Error(ErrorCode.Unauthorized, "Invalid password"));
             }
 
@@ -58,20 +41,20 @@ namespace AWMService.Application.UseCases.Auth.Commands.Login
                 .Select(rp => rp.Permission.Name)
                 .Distinct();
 
-            var accessToken = _tokenService.GenerateAccessToken(user, roles, permissions);
-            var refreshToken = _tokenService.GenerateRefreshToken();
+            var accessToken = tokenService.GenerateAccessToken(user, roles, permissions);
+            var refreshToken = tokenService.GenerateRefreshToken();
 
-            await _unitOfWork.BeginTransactionAsync(ct);
+            await unitOfWork.BeginTransactionAsync(ct);
             try
             {
                 user.RefreshToken = refreshToken;
-                user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays);
-                await _unitOfWork.CommitAsync(ct);
+                user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(jwtSettings.RefreshTokenExpirationInDays);
+                await unitOfWork.CommitAsync(ct);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while updating refresh token for user {Email}", user.Email);
-                await _unitOfWork.RollbackAsync(ct);
+                logger.LogError(ex, "An error occurred while updating refresh token for user {Email}", user.Email);
+                await unitOfWork.RollbackAsync(ct);
                 return Result.Failure<AuthResult>(new Error(ErrorCode.InternalServerError, "Failed to update user"));
             }
 
@@ -79,7 +62,7 @@ namespace AWMService.Application.UseCases.Auth.Commands.Login
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
-                ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationInMinutes),
+                ExpiresAt = DateTime.UtcNow.AddMinutes(jwtSettings.AccessTokenExpirationInMinutes),
                 User = new UserDto
                 {
                     Id = user.Id,
@@ -90,7 +73,7 @@ namespace AWMService.Application.UseCases.Auth.Commands.Login
                 }
             };
 
-            _logger.LogInformation("User {Email} logged in successfully.", user.Email);
+            logger.LogInformation("User {Email} logged in successfully.", user.Email);
             return result;
         }
     }

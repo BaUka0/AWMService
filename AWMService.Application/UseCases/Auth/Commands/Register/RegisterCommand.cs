@@ -4,7 +4,7 @@ using MediatR;
 
 namespace AWMService.Application.UseCases.Auth.Commands.Register
 {
-    public class RegisterCommand : IRequest<Result<AuthResult>>
+    public sealed record RegisterCommand : IRequest<Result<AuthResult>>
     {
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;

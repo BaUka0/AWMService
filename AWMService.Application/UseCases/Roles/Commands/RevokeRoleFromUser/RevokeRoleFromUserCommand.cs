@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AWMService.Application.UseCases.Roles.Commands.RevokeRoleFromUser
 {
-    public class RevokeRoleFromUserCommand : IRequest<Result>
+    public sealed record RevokeRoleFromUserCommand : IRequest<Result>
     {
         public int RoleId { get; set; }
         public int UserId { get; set; }
