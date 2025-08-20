@@ -4,9 +4,6 @@ using AWMService.Domain.Constatns;
 using KDS.Primitives.FluentResult;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace AWMService.Application.UseCases.Roles.Commands.AssignRoleToUser
 {

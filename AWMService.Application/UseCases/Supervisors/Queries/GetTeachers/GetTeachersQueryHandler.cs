@@ -3,10 +3,6 @@ using AWMService.Application.DTOs;
 using KDS.Primitives.FluentResult;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace AWMService.Application.UseCases.Supervisors.Queries.GetTeachers
 {
@@ -30,9 +26,9 @@ namespace AWMService.Application.UseCases.Supervisors.Queries.GetTeachers
                 t.Id,
                 $"{t.LastName} {t.FirstName}{(string.IsNullOrWhiteSpace(t.SurName) ? "" : " " + t.SurName)}",
                 t.Email,
-                approvedIds.Contains(t.Id)));
+                approvedIds.Contains(t.Id))).ToList();
 
-            return Result.Success(result);
+            return result;
         }
     }
 }
