@@ -7,6 +7,6 @@ namespace AWMService.Application.Abstractions.Services
     {
         string GenerateAccessToken(Users user, IEnumerable<string> roles, IEnumerable<string> permissions);
         string GenerateRefreshToken();
-        ClaimsPrincipal ValitadeToken(string token);
+        ClaimsPrincipal ValidateToken(string token);
     }
 }

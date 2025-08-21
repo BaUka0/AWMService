@@ -1,4 +1,4 @@
-﻿using AWMService.Domain.Constatns;
+﻿using AWMService.Domain.Constants;
 using KDS.Primitives.FluentResult;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
