@@ -21,6 +21,7 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
     {
         public async Task<Result<AuthResult>> Handle(RegisterCommand request, CancellationToken ct)
         {
+            using var scope = logger.BeginScope(new Dictionary<string, object> { ["Email"] = request.Email });
             logger.LogInformation("Attempting to register new user with email {Email}", request.Email);
 
             var exists = await usersRepository.GetByEmailAsync(request.Email, ct);

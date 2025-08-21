@@ -15,6 +15,7 @@ namespace AWMService.Application.UseCases.Supervisors.Commands.ApproveSupervisor
     {
         public async Task<Result> Handle(ApproveSupervisorsCommand request, CancellationToken ct)
         {
+            using var scope = logger.BeginScope(new Dictionary<string, object> { ["DepartmentId"] = request.DepartmentId, ["AcademicYearId"] = request.AcademicYearId, ["ActorUserId"] = request.ActorUserId });
             logger.LogInformation("Attempting to approve supervisors for DepartmentId {DepartmentId} and AcademicYearId {AcademicYearId}. UserIds: {UserIds}",
                 request.DepartmentId, request.AcademicYearId, string.Join(",", request.UserIds));
 

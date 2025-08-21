@@ -15,6 +15,7 @@ namespace AWMService.Application.UseCases.Roles.Commands.AssignPermission
     {
         public async Task<Result> Handle(AssignPermissionToRoleCommand request, CancellationToken ct)
         {
+            using var scope = logger.BeginScope(new Dictionary<string, object> { ["RoleId"] = request.RoleId, ["PermissionId"] = request.PermissionId, ["ActorUserId"] = request.ActorUserId });
             logger.LogInformation("Attempting to assign permission {PermissionId} to role {RoleId}", request.PermissionId, request.RoleId);
 
             var role = await rolesRepository.GetByIdAsync(request.RoleId, ct);

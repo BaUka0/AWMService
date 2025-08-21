@@ -19,6 +19,7 @@ namespace AWMService.Application.UseCases.Auth.Commands.Login
     {
         public async Task<Result<AuthResult>> Handle(LoginCommand request, CancellationToken ct)
         {
+            using var scope = logger.BeginScope(new Dictionary<string, object> { ["Email"] = request.Email });
             logger.LogInformation("Attempting to log in user with email {Email}", request.Email);
 
             var user = await usersRepository.GetByEmailWithRolesAsync(request.Email, ct);
