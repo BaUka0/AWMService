@@ -71,7 +71,7 @@ namespace AWMService.Infrastructure.Security
             return Convert.ToBase64String(randomNumber);
         }
 
-        public ClaimsPrincipal ValitadeToken(string token)
+        public ClaimsPrincipal ValidateToken(string token)
         {
             _logger.LogInformation("Validating a token.");
             var tokenHandler = new JwtSecurityTokenHandler();

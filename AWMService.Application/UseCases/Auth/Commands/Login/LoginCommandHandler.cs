@@ -1,4 +1,4 @@
-﻿using AWMService.Domain.Constatns;
+﻿using AWMService.Domain.Constants;
 using AWMService.Application.Abstractions.Repositories;
 using AWMService.Application.Abstractions.Data;
 using AWMService.Application.Abstractions.Services;

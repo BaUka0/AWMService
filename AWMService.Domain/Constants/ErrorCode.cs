@@ -1,4 +1,4 @@
-﻿namespace AWMService.Domain.Constatns
+﻿namespace AWMService.Domain.Constants
 {
     public static class ErrorCode
     {

@@ -2,7 +2,7 @@ using AWMService.Application.Abstractions.Repositories;
 using AWMService.Application.Abstractions.Data;
 using AWMService.Application.Abstractions.Services;
 using AWMService.Application.DTOs;
-using AWMService.Domain.Constatns;
+using AWMService.Domain.Constants;
 using KDS.Primitives.FluentResult;
 using MediatR;
 using Microsoft.Extensions.Logging;

@@ -2,7 +2,7 @@
 using AWMService.Application.Abstractions.Data;
 using AWMService.Application.Abstractions.Services;
 using AWMService.Application.DTOs;
-using AWMService.Domain.Constatns;
+using AWMService.Domain.Constants;
 using AWMService.Domain.Entities;
 using KDS.Primitives.FluentResult;
 using MediatR;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AWMService.Application.UseCases.Auth.Commands.Register
 {
-    internal class RegisterCommandHandler(
+    public class RegisterCommandHandler(
         IUsersRepository usersRepository,
         IRolesRepository rolesRepository,
         ITokenService tokenService,
@@ -28,6 +28,16 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
             {
                 logger.LogWarning("Registration failed: User with email {Email} already exists.", request.Email);
                 return Result.Failure<AuthResult>(new Error(ErrorCode.Conflict, "User with this email already exists"));
+            }
+
+            var roles = await rolesRepository.GetByIdsWithPermissionsAsync(request.RoleIds, ct);
+            var existingRoleIds = roles.Select(r => r.Id).ToHashSet();
+            var missingRoleIds = request.RoleIds.Where(id => !existingRoleIds.Contains(id)).ToList();
+
+            if (missingRoleIds.Any())
+            {
+                logger.LogWarning("Registration failed: Roles with IDs {RoleIds} do not exist.", string.Join(", ", missingRoleIds));
+                return Result.Failure<AuthResult>(new Error(ErrorCode.NotFound, $"Roles with IDs {string.Join(", ", missingRoleIds)} do not exist"));
             }
 
             var passwordHash = passwordHasher.HashPassword(request.Password);
@@ -70,7 +80,6 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
                 return Result.Failure<AuthResult>(new Error(ErrorCode.InternalServerError, "Failed to create user."));
             }
             
-            var roles = await rolesRepository.GetByIdsWithPermissionsAsync(request.RoleIds, ct);
             var roleNames = roles.Select(r => r.Name);
             var permissions = roles
                 .SelectMany(r => r.RolePermissions)

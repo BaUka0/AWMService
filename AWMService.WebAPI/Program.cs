@@ -2,6 +2,7 @@ using AWMService.WebAPI.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using AWMService.Infrastructure.Hubs;
 using Serilog;
+using AWMService.WebAPI.Middleware;
 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(new ConfigurationBuilder()
@@ -34,6 +35,7 @@ try
 
     var app = builder.Build();
 
+    app.UseMiddleware<ErrorHandlingMiddleware>();
     app.UseSerilogRequestLogging();
 
     // Configure the HTTP request pipeline.
@@ -62,3 +64,4 @@ finally
 {
     Log.CloseAndFlush();
 }
+
