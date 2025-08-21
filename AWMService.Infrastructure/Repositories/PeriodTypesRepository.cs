@@ -1,11 +1,9 @@
-﻿using AWMService.Application.Abstractions.Repositories;
+using AWMService.Application.Abstractions.Repositories;
 using AWMService.Domain.Entities;
 using AWMService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AWMService.Infrastructure.Repositories
@@ -14,52 +12,42 @@ namespace AWMService.Infrastructure.Repositories
     {
         private readonly AppDbContext _context;
 
-        public PeriodTypesRepository(AppDbContext context)=> _context = context;
-
-
-        public async Task<PeriodTypes?> GetPeriodTypeByIdAsync(int id, CancellationToken ct)
+        public PeriodTypesRepository(AppDbContext context)
         {
-            return await _context.Set<PeriodTypes>()
-                .AsNoTracking()
-                .FirstOrDefaultAsync(pt => pt.Id == id, ct);
+            _context = context;
         }
 
-        public async Task<IReadOnlyList<PeriodTypes>> GetAllPeriodTypesAsync(CancellationToken ct)
+        public async Task<IReadOnlyList<PeriodTypes>> ListAllAsync(CancellationToken ct)
         {
-            return await _context.Set<PeriodTypes>()
-                .AsNoTracking()
-                .Where(pt => !pt.IsDeleted)
-                .OrderBy(pt => pt.Name)
-                .ToListAsync(ct);
+            return await _context.PeriodTypes.AsNoTracking().ToListAsync(ct);
         }
 
-        public async Task AddPeriodTypeAsync(string name, CancellationToken ct)
+        public async Task<PeriodTypes> GetByIdAsync(int id, CancellationToken ct)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Name is required.", nameof(name));
-
-            var entity = new PeriodTypes
-            {
-                Name = name.Trim(),
-                IsDeleted = false,
-                DeletedOn = null,
-                DeletedBy = null
-            };
-
-            await _context.Set<PeriodTypes>().AddAsync(entity, ct);
+            return await _context.PeriodTypes.FindAsync(new object[] { id }, ct);
         }
 
-
-        public async Task DeletePeriodTypeAsync(int id, int actorUserId, CancellationToken ct)
+        public async Task<PeriodTypes> GetByNameAsync(string name, CancellationToken ct)
         {
-            var entity = await _context.Set<PeriodTypes>()
-                .FirstOrDefaultAsync(pt => pt.Id == id, ct);
+            return await _context.PeriodTypes.FirstOrDefaultAsync(x => x.Name == name, ct);
+        }
 
-            if (entity is null || entity.IsDeleted) return;
+        public async Task<PeriodTypes> AddAsync(PeriodTypes entity, CancellationToken ct)
+        {
+            await _context.PeriodTypes.AddAsync(entity, ct);
+            return entity;
+        }
 
-            entity.IsDeleted = true;
-            entity.DeletedOn = DateTime.UtcNow;
-            entity.DeletedBy = actorUserId;
+        public Task UpdateAsync(PeriodTypes entity, CancellationToken ct)
+        {
+            _context.Entry(entity).State = EntityState.Modified;
+            return Task.CompletedTask;
+        }
+
+        public Task SoftDeleteAsync(PeriodTypes entity, CancellationToken ct)
+        {
+            _context.Entry(entity).State = EntityState.Modified;
+            return Task.CompletedTask;
         }
     }
 }

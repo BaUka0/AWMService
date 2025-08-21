@@ -1,6 +1,6 @@
 using AWMService.Application.Abstractions.Repositories;
 using AWMService.Application.DTOs;
-using AWMService.Domain.Constatns;
+using AWMService.Domain.Constants;
 using KDS.Primitives.FluentResult;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace AWMService.Application.UseCases.AcademicYears.Queries.GetByDate
 {
     public sealed class GetAcademicYearByDateQueryHandler(
-        IAcademicYearsRepository repo,
+        IAcademicYearsRepository academicYearsRepository,
         ILogger<GetAcademicYearByDateQueryHandler> logger)
                 : IRequestHandler<GetAcademicYearByDateQuery, Result<AcademicYearDto>>
     {
@@ -17,7 +17,7 @@ namespace AWMService.Application.UseCases.AcademicYears.Queries.GetByDate
             using var scope = logger.BeginScope(new Dictionary<string, object> { ["Date"] = request.Date });
             logger.LogInformation("Attempting to get academic year by date: {Date}", request.Date);
 
-            var e = await repo.GetAcademicYearsByDateAsync(request.Date, ct);
+            var e = await academicYearsRepository.GetAcademicYearsByDateAsync(request.Date, ct);
             if (e is null)
             {
                 logger.LogWarning("Academic year for date {Date} not found.", request.Date);
