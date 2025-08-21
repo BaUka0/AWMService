@@ -13,12 +13,12 @@ namespace AWMService.WebAPI.Controllers
     [ApiController]
     [Route("api/supervisors")]
     [Authorize(Policy = "ManageSupervisors")]
-    public class SupervisorsController : BaseController
+    public class DepartmentSupervisorsController : BaseController
     {
         private readonly IMediator _mediator;
-        private readonly ILogger<SupervisorsController> _logger;
+        private readonly ILogger<DepartmentSupervisorsController> _logger;
 
-        public SupervisorsController(IMediator mediator, ILogger<SupervisorsController> logger)
+        public DepartmentSupervisorsController(IMediator mediator, ILogger<DepartmentSupervisorsController> logger)
         {
             _mediator = mediator;
             _logger = logger;
