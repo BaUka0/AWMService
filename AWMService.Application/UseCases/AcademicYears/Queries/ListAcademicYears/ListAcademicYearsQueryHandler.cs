@@ -14,7 +14,7 @@ namespace AWMService.Application.UseCases.AcademicYears.Queries.ListAcademicYear
         public async Task<Result<IReadOnlyList<AcademicYearDto>>> Handle(
             ListAcademicYearsQuery request, CancellationToken ct)
         {
-            logger.LogInformation("ListAcademicYears triggered.");
+            logger.LogInformation("Attempting to list all academic years.");
             var items = await repo.ListAllAsync(ct);
 
             var dtos = items
@@ -22,8 +22,9 @@ namespace AWMService.Application.UseCases.AcademicYears.Queries.ListAcademicYear
                 .Select(x => new AcademicYearDto(x.Id, x.YearName, x.StartDate, x.EndDate))
                 .ToList()
                 .AsReadOnly();
-
-            return Result.Success<IReadOnlyList<AcademicYearDto>>(dtos);
+            
+            logger.LogInformation("Successfully retrieved {Count} academic years.", dtos.Count);
+            return dtos;
         }
     }
 }

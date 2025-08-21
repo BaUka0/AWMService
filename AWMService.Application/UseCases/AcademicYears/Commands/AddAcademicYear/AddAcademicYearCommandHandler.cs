@@ -1,66 +1,59 @@
 using AWMService.Application.Abstractions.Data;
 using AWMService.Application.Abstractions.Repositories;
 using AWMService.Domain.Constatns;
+using AWMService.Domain.Commons;
 using KDS.Primitives.FluentResult;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace AWMService.Application.UseCases.AcademicYears.Commands.AddAcademicYear
 {
-    public sealed class AddAcademicYearCommandHandler : IRequestHandler<AddAcademicYearCommand, Result>
+    public sealed class AddAcademicYearCommandHandler(
+        IAcademicYearsRepository repo,
+        IUnitOfWork uow,
+        ILogger<AddAcademicYearCommandHandler> logger) : IRequestHandler<AddAcademicYearCommand, Result>
     {
-        private readonly IAcademicYearsRepository _repo;
-        private readonly IUnitOfWork _uow;
-        private readonly ILogger<AddAcademicYearCommandHandler> _logger;
-
-        public AddAcademicYearCommandHandler(
-            IAcademicYearsRepository repo,
-            IUnitOfWork uow,
-            ILogger<AddAcademicYearCommandHandler> logger)
-        {
-            _repo = repo;
-            _uow = uow;
-            _logger = logger;
-        }
-
         public async Task<Result> Handle(AddAcademicYearCommand request, CancellationToken ct)
         {
-            _logger.LogInformation("AddAcademicYear: {Name} {Start:yyyy-MM-dd}..{End:yyyy-MM-dd}",
+            using var scope = logger.BeginScope(new Dictionary<string, object>
+            {
+                ["YearName"] = request.YearName,
+                ["ActorUserId"] = request.ActorUserId
+            });
+
+            logger.LogInformation("Attempting to add academic year '{YearName}' from {StartDate} to {EndDate}",
                 request.YearName, request.StartDate, request.EndDate);
 
-            var yearName = request.YearName?.Trim();
-            if (string.IsNullOrWhiteSpace(yearName))
-                return Result.Failure(new Error(ErrorCode.BadRequest, "YearName is required."));
-            if (request.EndDate <= request.StartDate)
-                return Result.Failure(new Error(ErrorCode.BadRequest, "EndDate must be greater than StartDate."));
+            var yearName = request.YearName.Trim();
 
-            var all = await _repo.ListAllAsync(ct);
-            
+            var all = await repo.ListAllAsync(ct);
+
             if (all.Any(y => string.Equals(y.YearName, yearName, StringComparison.OrdinalIgnoreCase)))
+            {
+                logger.LogWarning("Academic year with name '{YearName}' already exists.", yearName);
                 return Result.Failure(new Error(ErrorCode.Conflict, "Учебный год с таким названием уже существует."));
-            
-            static bool Overlaps(DateTime s1, DateTime e1, DateTime s2, DateTime e2) => s1 <= e2 && s2 <= e1;
-            if (all.Any(y => Overlaps(request.StartDate, request.EndDate, y.StartDate, y.EndDate)))
-                return Result.Failure(new Error(ErrorCode.Conflict, "Диапазон дат пересекается с существующим учебным годом."));
+            }
 
-            await _uow.BeginTransactionAsync(ct);
+            if (all.Any(y => DateRangeHelper.Overlaps(request.StartDate, request.EndDate, y.StartDate, y.EndDate)))
+            {
+                logger.LogWarning("Date range for '{YearName}' overlaps with an existing academic year.", yearName);
+                return Result.Failure(new Error(ErrorCode.Conflict, "Диапазон дат пересекается с существующим учебным годом."));
+            }
+
+            await uow.BeginTransactionAsync(ct);
             try
             {
-                await _repo.AddAcademicYearsAsync(yearName, request.StartDate, request.EndDate, request.ActorUserId, ct);
-                await _uow.CommitAsync(ct);
+                await repo.AddAcademicYearsAsync(yearName, request.StartDate, request.EndDate, request.ActorUserId, ct);
+                await uow.CommitAsync(ct);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "AddAcademicYear failed.");
-                await _uow.RollbackAsync(ct);
+                logger.LogError(ex, "Failed to add academic year '{YearName}'.", yearName);
+                await uow.RollbackAsync(ct);
                 return Result.Failure(new Error(ErrorCode.InternalServerError, "Failed to add academic year."));
             }
 
-            _logger.LogInformation("AddAcademicYear: success ({Name})", yearName);
+            logger.LogInformation("Successfully added academic year '{YearName}'.", yearName);
             return Result.Success();
         }
     }

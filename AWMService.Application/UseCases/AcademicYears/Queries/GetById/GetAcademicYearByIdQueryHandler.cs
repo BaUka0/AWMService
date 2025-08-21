@@ -7,30 +7,26 @@ using Microsoft.Extensions.Logging;
 
 namespace AWMService.Application.UseCases.AcademicYears.Queries.GetById
 {
-    public sealed class GetAcademicYearByIdQueryHandler 
-        : IRequestHandler<GetAcademicYearByIdQuery, Result<AcademicYearDto>>
+    public sealed class GetAcademicYearByIdQueryHandler(
+        IAcademicYearsRepository repo,
+        ILogger<GetAcademicYearByIdQueryHandler> logger)
+                : IRequestHandler<GetAcademicYearByIdQuery, Result<AcademicYearDto>>
     {
-        private readonly IAcademicYearsRepository _repo;
-        private readonly ILogger<GetAcademicYearByIdQueryHandler> _logger;
-
-        public GetAcademicYearByIdQueryHandler(
-            IAcademicYearsRepository repo,
-            ILogger<GetAcademicYearByIdQueryHandler> logger)
-        {
-            _repo = repo;
-            _logger = logger;
-        }
-
         public async Task<Result<AcademicYearDto>> Handle(GetAcademicYearByIdQuery request, CancellationToken ct)
         {
-            _logger.LogInformation("GetAcademicYearById Id={Id}", request.Id);
+            using var scope = logger.BeginScope(new Dictionary<string, object> { ["AcademicYearId"] = request.Id });
+            logger.LogInformation("Attempting to get academic year by Id: {AcademicYearId}", request.Id);
 
-            var e = await _repo.GetAcademicYearsByIdAsync(request.Id, ct);
+            var e = await repo.GetAcademicYearsByIdAsync(request.Id, ct);
             if (e is null)
+            {
+                logger.LogWarning("Academic year with Id {AcademicYearId} not found.", request.Id);
                 return Result.Failure<AcademicYearDto>(new Error(ErrorCode.NotFound, "Учебный год не найден."));
+            }
 
             var dto = new AcademicYearDto(e.Id, e.YearName, e.StartDate, e.EndDate);
-            return Result.Success(dto);
+            logger.LogInformation("Successfully found academic year '{YearName}' with Id {AcademicYearId}", dto.YearName, request.Id);
+            return dto;
         }
     }
 }

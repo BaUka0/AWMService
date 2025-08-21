@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AWMService.Application.UseCases.AcademicYears.Commands.DeleteAcademicYear
 {
-    public sealed class DeleteAcademicYearCommand : IRequest<Result>
+    public sealed record DeleteAcademicYearCommand : IRequest<Result>
     {
         public int Id { get; set; }
         public int ActorUserId { get; set; }

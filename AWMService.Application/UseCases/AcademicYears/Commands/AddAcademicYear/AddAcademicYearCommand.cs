@@ -4,7 +4,7 @@ using System;
 
 namespace AWMService.Application.UseCases.AcademicYears.Commands.AddAcademicYear
 {
-    public sealed class AddAcademicYearCommand : IRequest<Result>
+    public sealed record AddAcademicYearCommand : IRequest<Result>
     {
         public string YearName { get; set; } = default!;
         public DateTime StartDate { get; set; }
