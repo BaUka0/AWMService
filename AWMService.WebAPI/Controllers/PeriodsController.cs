@@ -1,26 +1,23 @@
-using AWMService.Application.UseCases.PeriodType.Commands.AddPeriodType;
-using AWMService.Application.UseCases.PeriodType.Commands.DeletePeriodType;
-using AWMService.Application.UseCases.PeriodType.Commands.UpdatePeriodType;
-using AWMService.Application.UseCases.PeriodType.Queries.GetPeriodTypeById;
-using AWMService.Application.UseCases.PeriodType.Queries.ListPeriodTypes;
+using AWMService.Application.UseCases.Periods.Commands.AddPeriod;
+using AWMService.Application.UseCases.Periods.Commands.DeletePeriod;
+using AWMService.Application.UseCases.Periods.Commands.UpdatePeriod;
+using AWMService.Application.UseCases.Periods.Queries.GetPeriodById;
+using AWMService.Application.UseCases.Periods.Queries.ListPeriods;
 using AWMService.WebAPI.Authorization;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace AWMService.WebAPI.Controllers
 {
     [ApiController]
-    [Route("api/period-types")]
-    public class PeriodTypesController : BaseController
+    [Route("api/periods")]
+    public class PeriodsController : BaseController
     {
         private readonly IMediator _mediator;
-        private readonly ILogger<PeriodTypesController> _logger;
+        private readonly ILogger<PeriodsController> _logger;
 
-        public PeriodTypesController(IMediator mediator, ILogger<PeriodTypesController> logger)
+        public PeriodsController(IMediator mediator, ILogger<PeriodsController> logger)
         {
             _mediator = mediator;
             _logger = logger;
@@ -29,26 +26,26 @@ namespace AWMService.WebAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> ListAll(CancellationToken ct)
         {
-            _logger.LogInformation("ListAll PeriodTypes endpoint triggered.");
-            var result = await _mediator.Send(new ListPeriodTypesQuery(), ct);
+            _logger.LogInformation("ListAll Periods endpoint triggered.");
+            var result = await _mediator.Send(new ListPeriodsQuery(), ct);
             return Ok(result.Value);
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id, CancellationToken ct)
         {
-            _logger.LogInformation("GetById PeriodType endpoint triggered for Id={Id}.", id);
-            var result = await _mediator.Send(new GetPeriodTypeByIdQuery(id), ct);
+            _logger.LogInformation("GetById Period endpoint triggered for Id={Id}.", id);
+            var result = await _mediator.Send(new GetPeriodByIdQuery { Id = id }, ct);
             if (result.IsSuccess)
                 return Ok(result.Value);
             return GenerateProblemResponse(result.Error);
         }
 
         [HttpPost]
-        [HasPermission("manage_period_types")]
-        public async Task<IActionResult> Add([FromBody] AddPeriodTypeCommand command, CancellationToken ct)
+        [HasPermission("manage_periods")]
+        public async Task<IActionResult> Add([FromBody] AddPeriodCommand command, CancellationToken ct)
         {
-            _logger.LogInformation("Add PeriodType endpoint triggered.");
+            _logger.LogInformation("Add Period endpoint triggered.");
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!int.TryParse(userIdClaim, out var actorUserId))
             {
@@ -59,16 +56,16 @@ namespace AWMService.WebAPI.Controllers
             var result = await _mediator.Send(command, ct);
 
             if (result.IsSuccess)
-                return CreatedAtAction(nameof(GetById), new { id = result.Value }, result.Value);
+                return CreatedAtAction(nameof(GetById), new { id = result.Value.Id }, result.Value);
 
             return GenerateProblemResponse(result.Error);
         }
 
         [HttpPut("{id:int}")]
-        [HasPermission("manage_period_types")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdatePeriodTypeCommand command, CancellationToken ct)
+        [HasPermission("manage_periods")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdatePeriodCommand command, CancellationToken ct)
         {
-            _logger.LogInformation("Update PeriodType endpoint triggered for Id={Id}.", id);
+            _logger.LogInformation("Update Period endpoint triggered for Id={Id}.", id);
 
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!int.TryParse(userIdClaim, out var actorUserId))
@@ -87,17 +84,19 @@ namespace AWMService.WebAPI.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        [HasPermission("manage_period_types")]
-        public async Task<IActionResult> Delete(int id, CancellationToken ct)
+        [HasPermission("manage_periods")]
+        public async Task<IActionResult> Delete(int id, [FromBody] DeletePeriodCommand command, CancellationToken ct)
         {
-            _logger.LogInformation("Delete PeriodType endpoint triggered for Id={Id}.", id);
+            _logger.LogInformation("Delete Period endpoint triggered for Id={Id}.", id);
+
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!int.TryParse(userIdClaim, out var actorUserId))
             {
                 return Unauthorized();
             }
+            command.ActorUserId = actorUserId;
+            command.Id = id;
 
-            var command = new DeletePeriodTypeCommand { Id = id, ActorUserId = actorUserId };
             var result = await _mediator.Send(command, ct);
 
             if (result.IsSuccess)
