@@ -15,6 +15,7 @@ namespace AWMService.Application.UseCases.Roles.Commands.RevokePermission
     {
         public async Task<Result> Handle(RevokePermissionFromRoleCommand request, CancellationToken ct)
         {
+            using var scope = logger.BeginScope(new Dictionary<string, object> { ["RoleId"] = request.RoleId, ["PermissionId"] = request.PermissionId, ["ActorUserId"] = request.ActorUserId });
             logger.LogInformation("Attempting to revoke permission {PermissionId} from role {RoleId}", request.PermissionId, request.RoleId);
 
             // Check if role exists

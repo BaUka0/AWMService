@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace AWMService.Application.UseCases.AcademicYears.Queries.ListAcademicYears
 {
     public sealed class ListAcademicYearsQueryHandler(
-        IAcademicYearsRepository repo,
+        IAcademicYearsRepository academicYearsRepository,
         ILogger<ListAcademicYearsQueryHandler> logger)
         : IRequestHandler<ListAcademicYearsQuery, Result<IReadOnlyList<AcademicYearDto>>>
     {
@@ -15,7 +15,7 @@ namespace AWMService.Application.UseCases.AcademicYears.Queries.ListAcademicYear
             ListAcademicYearsQuery request, CancellationToken ct)
         {
             logger.LogInformation("Attempting to list all academic years.");
-            var items = await repo.ListAllAsync(ct);
+            var items = await academicYearsRepository.ListAllAsync(ct);
 
             var dtos = items
                 .OrderByDescending(x => x.StartDate)

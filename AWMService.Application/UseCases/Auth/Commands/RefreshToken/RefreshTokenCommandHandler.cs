@@ -18,6 +18,7 @@ namespace AWMService.Application.UseCases.Auth.Commands.RefreshToken
     {
         public async Task<Result<AuthResult>> Handle(RefreshTokenCommand request, CancellationToken ct)
         {
+            using var scope = logger.BeginScope(new Dictionary<string, object> { ["RefreshToken"] = request.RefreshToken });
             logger.LogInformation("Attempting to refresh token.");
 
             var user = await usersRepository.GetByRefreshTokenAsync(request.RefreshToken, ct);

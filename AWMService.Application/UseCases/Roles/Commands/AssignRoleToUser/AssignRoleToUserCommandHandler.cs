@@ -15,6 +15,7 @@ namespace AWMService.Application.UseCases.Roles.Commands.AssignRoleToUser
     {
         public async Task<Result> Handle(AssignRoleToUserCommand request, CancellationToken ct)
         {
+            using var scope = logger.BeginScope(new Dictionary<string, object> { ["RoleId"] = request.RoleId, ["UserId"] = request.UserId, ["ActorUserId"] = request.ActorUserId });
             logger.LogInformation("Attempting to assign role {RoleId} to user {UserId} by actor {ActorUserId}", 
                 request.RoleId, request.UserId, request.ActorUserId);
 

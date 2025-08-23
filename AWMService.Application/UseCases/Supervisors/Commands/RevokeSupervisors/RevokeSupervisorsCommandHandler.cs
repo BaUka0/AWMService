@@ -14,6 +14,7 @@ namespace AWMService.Application.UseCases.Supervisors.Commands.RevokeSupervisors
     {
         public async Task<Result> Handle(RevokeSupervisorsCommand request, CancellationToken ct)
         {
+            using var scope = logger.BeginScope(new Dictionary<string, object> { ["DepartmentId"] = request.DepartmentId, ["AcademicYearId"] = request.AcademicYearId, ["ActorUserId"] = request.ActorUserId });
             logger.LogInformation("Attempting to revoke supervisors for DepartmentId {DepartmentId} and AcademicYearId {AcademicYearId}. UserIds: {UserIds}",
                 request.DepartmentId, request.AcademicYearId, string.Join(",", request.UserIds));
 

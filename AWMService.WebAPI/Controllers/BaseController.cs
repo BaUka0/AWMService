@@ -2,6 +2,7 @@
 using KDS.Primitives.FluentResult;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace AWMService.WebAPI.Controllers
 {

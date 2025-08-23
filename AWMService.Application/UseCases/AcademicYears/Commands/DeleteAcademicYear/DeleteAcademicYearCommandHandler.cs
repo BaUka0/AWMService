@@ -1,6 +1,6 @@
 using AWMService.Application.Abstractions.Data;
 using AWMService.Application.Abstractions.Repositories;
-using AWMService.Domain.Constatns;
+using AWMService.Domain.Constants;
 using KDS.Primitives.FluentResult;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -8,8 +8,8 @@ using Microsoft.Extensions.Logging;
 namespace AWMService.Application.UseCases.AcademicYears.Commands.DeleteAcademicYear
 {
     public sealed class DeleteAcademicYearCommandHandler(
-        IAcademicYearsRepository repo,
-        IUnitOfWork uow,
+        IAcademicYearsRepository academicYearsRepository,
+        IUnitOfWork unitOfWork,
         ILogger<DeleteAcademicYearCommandHandler> logger) : IRequestHandler<DeleteAcademicYearCommand, Result>
     {
         public async Task<Result> Handle(DeleteAcademicYearCommand request, CancellationToken ct)
@@ -22,23 +22,27 @@ namespace AWMService.Application.UseCases.AcademicYears.Commands.DeleteAcademicY
 
             logger.LogInformation("Attempting to delete academic year with Id {AcademicYearId}", request.Id);
 
-            var existing = await repo.GetAcademicYearsByIdAsync(request.Id, ct);
-            if (existing is null)
+            var entity = await academicYearsRepository.GetAcademicYearsByIdAsync(request.Id, ct);
+            if (entity is null)
             {
                 logger.LogWarning("Academic year with Id {AcademicYearId} not found.", request.Id);
                 return Result.Failure(new Error(ErrorCode.NotFound, "Учебный год не найден."));
             }
 
-            await uow.BeginTransactionAsync(ct);
+            entity.IsDeleted = true;
+            entity.DeletedOn = DateTime.UtcNow;
+            entity.DeletedBy = request.ActorUserId;
+
+            await unitOfWork.BeginTransactionAsync(ct);
             try
             {
-                await repo.SoftDeleteAcademicYearsAsync(request.Id, request.ActorUserId, ct);
-                await uow.CommitAsync(ct);
+                await academicYearsRepository.SoftDeleteAsync(entity, ct);
+                await unitOfWork.CommitAsync(ct);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Failed to delete academic year with Id {AcademicYearId}", request.Id);
-                await uow.RollbackAsync(ct);
+                await unitOfWork.RollbackAsync(ct);
                 return Result.Failure(new Error(ErrorCode.InternalServerError, "Failed to delete academic year."));
             }
 

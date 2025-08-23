@@ -11,6 +11,7 @@ namespace AWMService.Application.UseCases.Auth.Commands.Logout
     {
         public async Task<Result> Handle(LogoutCommand request, CancellationToken ct)
         {
+            using var scope = logger.BeginScope(new Dictionary<string, object> { ["UserId"] = request.UserId });
             logger.LogInformation("Attempting to log out user with ID {UserId}", request.UserId);
 
             var user = await usersRepository.GetByIdAsync(request.UserId, ct);

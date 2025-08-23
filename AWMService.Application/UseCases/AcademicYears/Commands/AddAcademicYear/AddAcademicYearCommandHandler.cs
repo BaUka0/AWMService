@@ -1,6 +1,6 @@
 using AWMService.Application.Abstractions.Data;
 using AWMService.Application.Abstractions.Repositories;
-using AWMService.Domain.Constatns;
+using AWMService.Domain.Constants;
 using AWMService.Domain.Commons;
 using KDS.Primitives.FluentResult;
 using MediatR;
@@ -9,8 +9,8 @@ using Microsoft.Extensions.Logging;
 namespace AWMService.Application.UseCases.AcademicYears.Commands.AddAcademicYear
 {
     public sealed class AddAcademicYearCommandHandler(
-        IAcademicYearsRepository repo,
-        IUnitOfWork uow,
+        IAcademicYearsRepository academicYearsRepository,
+        IUnitOfWork unitOfWork,
         ILogger<AddAcademicYearCommandHandler> logger) : IRequestHandler<AddAcademicYearCommand, Result>
     {
         public async Task<Result> Handle(AddAcademicYearCommand request, CancellationToken ct)
@@ -26,7 +26,7 @@ namespace AWMService.Application.UseCases.AcademicYears.Commands.AddAcademicYear
 
             var yearName = request.YearName.Trim();
 
-            var all = await repo.ListAllAsync(ct);
+            var all = await academicYearsRepository.ListAllAsync(ct);
 
             if (all.Any(y => string.Equals(y.YearName, yearName, StringComparison.OrdinalIgnoreCase)))
             {
@@ -40,16 +40,16 @@ namespace AWMService.Application.UseCases.AcademicYears.Commands.AddAcademicYear
                 return Result.Failure(new Error(ErrorCode.Conflict, "Диапазон дат пересекается с существующим учебным годом."));
             }
 
-            await uow.BeginTransactionAsync(ct);
+            await unitOfWork.BeginTransactionAsync(ct);
             try
             {
-                await repo.AddAcademicYearsAsync(yearName, request.StartDate, request.EndDate, request.ActorUserId, ct);
-                await uow.CommitAsync(ct);
+                await academicYearsRepository.AddAcademicYearsAsync(yearName, request.StartDate, request.EndDate, request.ActorUserId, ct);
+                await unitOfWork.CommitAsync(ct);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Failed to add academic year '{YearName}'.", yearName);
-                await uow.RollbackAsync(ct);
+                await unitOfWork.RollbackAsync(ct);
                 return Result.Failure(new Error(ErrorCode.InternalServerError, "Failed to add academic year."));
             }
 

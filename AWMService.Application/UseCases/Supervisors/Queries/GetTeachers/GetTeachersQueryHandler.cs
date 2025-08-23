@@ -13,6 +13,7 @@ namespace AWMService.Application.UseCases.Supervisors.Queries.GetTeachers
     {
         public async Task<Result<IEnumerable<TeacherDto>>> Handle(GetTeachersQuery request, CancellationToken ct)
         {
+            using var scope = logger.BeginScope(new Dictionary<string, object> { ["DepartmentId"] = request.DepartmentId, ["AcademicYearId"] = request.AcademicYearId });
             logger.LogInformation("Fetching teachers for DepartmentId: {DepartmentId} and AcademicYearId: {AcademicYearId}", 
                 request.DepartmentId, request.AcademicYearId);
 

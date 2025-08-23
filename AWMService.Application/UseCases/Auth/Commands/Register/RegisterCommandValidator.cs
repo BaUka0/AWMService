@@ -7,10 +7,12 @@ namespace AWMService.Application.UseCases.Auth.Commands.Register
         public RegisterCommandValidator()
         {
             RuleFor(x => x.FirstName)
-                .NotEmpty().WithMessage("First name is required.");
+                .NotEmpty().WithMessage("First name is required.")
+                .MaximumLength(100).WithMessage("First name cannot be longer than 100 characters.");
 
             RuleFor(x => x.LastName)
-                .NotEmpty().WithMessage("Last name is required.");
+                .NotEmpty().WithMessage("Last name is required.")
+                .MaximumLength(100).WithMessage("Last name cannot be longer than 100 characters.");
 
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email is required.")
