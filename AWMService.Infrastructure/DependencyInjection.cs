@@ -93,6 +93,7 @@ public static class DependencyInjection
         services.AddScoped<IWorkTypesRepository, WorkTypesRepository>();
         services.AddScoped<IEvaluationCriteriaRepository, EvaluationCriteriaRepository>();
         services.AddScoped<IEvaluationScoresRepository, EvaluationScoresRepository>();
+        services.AddScoped<IAttachmentsRepository, AttachmentsRepository>();
         services.AddScoped<INotificationAccessService, NotificationAccessService>();
         // Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
