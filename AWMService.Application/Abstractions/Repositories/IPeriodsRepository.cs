@@ -8,6 +8,6 @@ namespace AWMService.Application.Abstractions.Repositories
         Task<Periods> GetByIdAsync(int id, CancellationToken ct);
         Task<int> AddAsync(Periods period, CancellationToken ct);
         Task UpdateAsync(Periods period, CancellationToken ct);
-        Task DeleteAsync(int id, CancellationToken ct);
+        Task SoftDeleteAsync(Periods period, CancellationToken ct);
     }
 }

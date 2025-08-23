@@ -22,17 +22,21 @@ namespace AWMService.Application.UseCases.AcademicYears.Commands.DeleteAcademicY
 
             logger.LogInformation("Attempting to delete academic year with Id {AcademicYearId}", request.Id);
 
-            var existing = await academicYearsRepository.GetAcademicYearsByIdAsync(request.Id, ct);
-            if (existing is null)
+            var entity = await academicYearsRepository.GetAcademicYearsByIdAsync(request.Id, ct);
+            if (entity is null)
             {
                 logger.LogWarning("Academic year with Id {AcademicYearId} not found.", request.Id);
                 return Result.Failure(new Error(ErrorCode.NotFound, "Учебный год не найден."));
             }
 
+            entity.IsDeleted = true;
+            entity.DeletedOn = DateTime.UtcNow;
+            entity.DeletedBy = request.ActorUserId;
+
             await unitOfWork.BeginTransactionAsync(ct);
             try
             {
-                await academicYearsRepository.SoftDeleteAcademicYearsAsync(request.Id, request.ActorUserId, ct);
+                await academicYearsRepository.SoftDeleteAsync(entity, ct);
                 await unitOfWork.CommitAsync(ct);
             }
             catch (Exception ex)

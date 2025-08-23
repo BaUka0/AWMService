@@ -44,13 +44,10 @@ namespace AWMService.Infrastructure.Repositories
             return Task.CompletedTask;
         }
 
-        public async Task DeleteAsync(int id, CancellationToken ct)
+        public Task SoftDeleteAsync(Periods period, CancellationToken ct)
         {
-            var period = await _context.Periods.FindAsync(new object[] { id }, ct);
-            if (period != null)
-            {
-                _context.Periods.Remove(period);
-            }
+            _context.Periods.Update(period);
+            return Task.CompletedTask;
         }
     }
 }

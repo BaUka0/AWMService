@@ -56,31 +56,17 @@ namespace AWMService.Infrastructure.Repositories
             await _context.Set<AcademicYears>().AddAsync(entity, ct);
         }
 
-        public async Task UpdateAcademicYearsAsync(int id, string yearName, DateTime startDate, DateTime endDate, int actorUserId, CancellationToken ct)
+        public Task UpdateAsync(AcademicYears entity, CancellationToken ct)
         {
-            if (string.IsNullOrWhiteSpace(yearName)) throw new ArgumentException("Year name is required.", nameof(yearName));
-            if (startDate > endDate) throw new ArgumentException("StartDate must be <= EndDate.");
-
-            var entity = await _context.Set<AcademicYears>()
-                .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, ct)
-                ?? throw new KeyNotFoundException($"AcademicYear #{id} not found.");
-
-            entity.YearName = yearName.Trim();
-            entity.StartDate = startDate.Date;
-            entity.EndDate = endDate.Date;
-            entity.ModifiedBy = actorUserId;
-            entity.ModifiedOn = DateTime.UtcNow;
+            _context.Set<AcademicYears>().Update(entity);
+            return Task.CompletedTask;
         }
 
 
-        public async Task SoftDeleteAcademicYearsAsync(int id, int actorUserId, CancellationToken ct)
+        public Task SoftDeleteAsync(AcademicYears entity, CancellationToken ct)
         {
-            var entity = await _context.Set<AcademicYears>().FirstOrDefaultAsync(x => x.Id == id, ct);
-            if (entity is null || entity.IsDeleted) return;
-
-            entity.IsDeleted = true;
-            entity.DeletedOn = DateTime.UtcNow;
-            entity.DeletedBy = actorUserId;
+            _context.Set<AcademicYears>().Update(entity);
+            return Task.CompletedTask;
         }
     }
 }

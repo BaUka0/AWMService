@@ -28,8 +28,8 @@ namespace AWMService.Application.UseCases.PeriodType.Commands.DeletePeriodType
             }
 
             entity.IsDeleted = true;
-            entity.ModifiedBy = request.ActorUserId;
-            entity.ModifiedOn = DateTime.UtcNow;
+            entity.DeletedOn = DateTime.UtcNow;
+            entity.DeletedBy = request.ActorUserId;
 
             await unitOfWork.BeginTransactionAsync(ct);
             try

@@ -10,7 +10,7 @@ namespace AWMService.Application.Abstractions.Repositories
 
         Task AddAcademicYearsAsync(string yearName, DateTime startDate, DateTime endDate, int actorUserId, CancellationToken ct);
 
-        Task UpdateAcademicYearsAsync(int id, string yearName, DateTime startDate, DateTime endDate, int actorUserId, CancellationToken ct);
-        Task SoftDeleteAcademicYearsAsync(int id, int actorUserId, CancellationToken ct);
+        Task UpdateAsync(AcademicYears entity, CancellationToken ct);
+        Task SoftDeleteAsync(AcademicYears entity, CancellationToken ct);
     }
 }
