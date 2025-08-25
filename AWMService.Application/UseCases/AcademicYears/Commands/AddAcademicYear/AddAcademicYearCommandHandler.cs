@@ -1,6 +1,6 @@
 using AWMService.Application.Abstractions.Data;
 using AWMService.Application.Abstractions.Repositories;
-using AWMService.Domain.Constatns;
+using AWMService.Domain.Constants;
 using AWMService.Domain.Commons;
 using KDS.Primitives.FluentResult;
 using MediatR;

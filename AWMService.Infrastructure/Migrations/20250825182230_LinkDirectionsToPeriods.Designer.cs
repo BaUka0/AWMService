@@ -4,6 +4,7 @@ using AWMService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AWMService.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250825182230_LinkDirectionsToPeriods")]
+    partial class LinkDirectionsToPeriods
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1416,9 +1419,6 @@ namespace AWMService.Infrastructure.Migrations
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PeriodId")
-                        .HasColumnType("int");
-
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
 
@@ -1451,8 +1451,6 @@ namespace AWMService.Infrastructure.Migrations
                     b.HasIndex("DirectionId");
 
                     b.HasIndex("ModifiedBy");
-
-                    b.HasIndex("PeriodId");
 
                     b.HasIndex("StatusId");
 
@@ -2436,12 +2434,6 @@ namespace AWMService.Infrastructure.Migrations
                         .HasForeignKey("ModifiedBy")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("AWMService.Domain.Entities.Periods", "Period")
-                        .WithMany()
-                        .HasForeignKey("PeriodId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("AWMService.Domain.Entities.Statuses", "Status")
                         .WithMany()
                         .HasForeignKey("StatusId")
@@ -2455,8 +2447,6 @@ namespace AWMService.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Direction");
-
-                    b.Navigation("Period");
 
                     b.Navigation("Status");
 

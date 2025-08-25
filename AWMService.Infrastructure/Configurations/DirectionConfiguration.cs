@@ -22,6 +22,12 @@ namespace AWMService.Infrastructure.Configurations
 
             e.HasIndex(x => x.StatusId);
             e.HasIndex(x => x.SupervisorId);
+            e.HasIndex(x => x.PeriodId);
+
+            e.HasOne(x => x.Period)
+                .WithMany()
+                .HasForeignKey(x => x.PeriodId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             e.HasOne(x => x.Supervisor)
                 .WithMany()

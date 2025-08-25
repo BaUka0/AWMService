@@ -20,6 +20,9 @@ namespace AWMService.Domain.Entities
         public int StatusId { get; set; }
         public Statuses Status { get; set; } = null!;
 
+        public int PeriodId { get; set; }
+        public Periods Period { get; set; } = null!;
+
         public ICollection<StudentWork> StudentWorks { get; set; } = new List<StudentWork>();
     }
 }

@@ -23,15 +23,21 @@ namespace AWMService.Infrastructure.Configurations
             e.Property(x => x.IsDeleted)
                 .HasDefaultValue(false);
 
-            e.HasIndex(x => x.DirectionId);
             e.HasIndex(x => x.SupervisorId);
             e.HasIndex(x => x.StatusId);
+            e.HasIndex(x => x.PeriodId);
             e.HasIndex(x => x.CreatedOn);
 
             e.HasOne(x => x.Direction)
                 .WithMany(d => d.Topics)
                 .HasForeignKey(x => x.DirectionId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasOne(x => x.Period)
+                .WithMany()
+                .HasForeignKey(x => x.PeriodId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             e.HasOne(x => x.Supervisor)
                 .WithMany()
                 .HasForeignKey(x => x.SupervisorId)
